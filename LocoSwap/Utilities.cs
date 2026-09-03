@@ -166,12 +166,22 @@ namespace LocoSwap
             return newNode;
         }
 
+        /// <summary>URL opened by the Help button when the bundled PDF manual isn't present.</summary>
+        public const string OnlineHelpUrl = "https://github.com/flicard/LocoSwap";
+
         public static void OpenManual()
         {
-            string manualFileName = "LocoSwap_manual.pdf";
-            if (File.Exists(manualFileName))
+            const string manualFileName = "LocoSwap_manual.pdf";
+            string target = File.Exists(manualFileName)
+                ? Path.GetFullPath(manualFileName)
+                : OnlineHelpUrl;
+            try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(manualFileName) { UseShellExecute = true });
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(target) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Warning(ex, "Could not open help target {Target}", target);
             }
         }
     }

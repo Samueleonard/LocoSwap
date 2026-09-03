@@ -1,0 +1,148 @@
+<ui:FluentWindow x:Class="LocoSwap.ConsistScanWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loc="clr-namespace:LocoSwap"
+        xmlns:converters="clr-namespace:LocoSwap.Converters"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        Title="{loc:Loc consist_scan_title}" Height="640" Width="1040" MinWidth="720" MinHeight="420">
+    <ui:FluentWindow.Resources>
+        <converters:ScenarioStatusToImageConverter x:Key="ScenarioStatusToImageConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:FluentWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="{loc:Loc consist_scan_title}" />
+
+        <ui:CardControl Grid.Row="1" Margin="12,4,12,8" Padding="12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="{loc:Loc consist_scan_desc}" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="StatusText" Margin="0,6,0,0" TextWrapping="Wrap" />
+                    <ProgressBar x:Name="ScanProgress" Height="3" Margin="0,6,0,0" Minimum="0" Maximum="1"
+                                 Visibility="{Binding IsScanning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <ui:Button x:Name="ScanButton" Icon="{ui:SymbolIcon Search24}" Appearance="Primary"
+                               Content="{loc:Loc scan_all_consists}" Click="ScanButton_Click" Margin="0,0,6,0" />
+                    <ui:Button x:Name="CancelButton" Icon="{ui:SymbolIcon Dismiss24}" Content="{loc:Loc cancel}"
+                               Click="CancelButton_Click" IsEnabled="False" Margin="0,0,6,0" />
+                    <ui:Button x:Name="CopyButton" Icon="{ui:SymbolIcon Copy24}" Content="{loc:Loc copy_report}"
+                               Click="CopyButton_Click" IsEnabled="False" />
+                </StackPanel>
+            </Grid>
+        </ui:CardControl>
+
+        <Grid Grid.Row="2" Margin="12,0,12,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="380" MinWidth="280" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <ListView x:Name="ResultList" ItemsSource="{Binding Results}"
+                          SelectionMode="Single">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="" Width="28">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Width="12" Height="12"
+                                               Source="{Binding Status, Converter={StaticResource ScenarioStatusToImageConverter}}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="{loc:Loc route}" Width="240" DisplayMemberBinding="{Binding RouteName}" />
+                            <GridViewColumn Header="{loc:Loc scenario}" Width="240" DisplayMemberBinding="{Binding ScenarioName}" />
+                            <GridViewColumn Header="{loc:Loc player_train_name}" Width="150" DisplayMemberBinding="{Binding PlayerTrainName}" />
+                            <GridViewColumn Header="{loc:Loc missing_count_header}" Width="70" DisplayMemberBinding="{Binding MissingCount}" />
+                            <GridViewColumn Header="{loc:Loc in_ap_short}" Width="44">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding InAp}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <TextBlock Text="{loc:Loc consist_scan_none}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Visibility="{Binding ShowEmptyState, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                          Background="Transparent" Margin="3,0" />
+
+            <GroupBox Grid.Column="2" Header="{loc:Loc missing_vehicles}"
+                      DataContext="{Binding SelectedItem, ElementName=ResultList}">
+                <Grid Margin="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Margin="0,0,0,4" FontWeight="SemiBold"
+                               Text="{Binding ScenarioName}" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="1" Margin="0,0,0,6"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{Binding ScenarioId}" />
+
+                    <TextBlock Grid.Row="2" Text="{loc:Loc path}" Margin="0,0,0,2"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ui:TextBox Grid.Row="3" Margin="0,0,0,8" IsReadOnly="True" TextWrapping="Wrap"
+                                Text="{Binding Location, Mode=OneWay}" />
+
+                    <ListBox Grid.Row="4" ItemsSource="{Binding MissingVehicles}"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,2">
+                                    <TextBlock TextWrapping="Wrap">
+                                        <Run Text="{Binding VehicleName, Mode=OneWay}" FontWeight="SemiBold" />
+                                        <Run Text="{Binding Number, Mode=OneWay, StringFormat=\{0\}}"
+                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </TextBlock>
+                                    <TextBlock TextWrapping="Wrap" FontSize="11"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding BlueprintPath, Mode=OneWay, StringFormat=\\Assets\\\{0\}}" />
+                                    <TextBlock TextWrapping="Wrap" FontSize="11"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding ConsistName, Mode=OneWay}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,8,0,0">
+                        <ui:Button Icon="{ui:SymbolIcon FolderOpen24}" Content="{loc:Loc open_file_location}"
+                                   Click="OpenLocation_Click" Margin="0,0,6,0" />
+                        <ui:Button Icon="{ui:SymbolIcon Edit24}" Content="{loc:Loc edit_scenario}"
+                                   Click="EditScenario_Click" />
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

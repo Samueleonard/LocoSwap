@@ -126,6 +126,45 @@
   <data name="and_add_as_rule" xml:space="preserve">
     <value>and add as rule</value>
   </data>
+  <data name="scan_all_consists" xml:space="preserve">
+    <value>Scan all consists</value>
+  </data>
+  <data name="consist_scan_title" xml:space="preserve">
+    <value>Broken consist scan</value>
+  </data>
+  <data name="consist_scan_desc" xml:space="preserve">
+    <value>Check every scenario in every installed route for consists that use vehicles which are not installed.</value>
+  </data>
+  <data name="consist_scan_idle" xml:space="preserve">
+    <value>Ready to scan every route and scenario.</value>
+  </data>
+  <data name="consist_scan_none" xml:space="preserve">
+    <value>No broken consists found.</value>
+  </data>
+  <data name="consist_scan_running" xml:space="preserve">
+    <value>Scanning…</value>
+  </data>
+  <data name="consist_scan_summary" xml:space="preserve">
+    <value>{0} scenario(s) with missing vehicles, out of {1} scanned.</value>
+  </data>
+  <data name="consist_scan_cancelled" xml:space="preserve">
+    <value>Scan cancelled.</value>
+  </data>
+  <data name="missing_vehicles" xml:space="preserve">
+    <value>Missing vehicles</value>
+  </data>
+  <data name="missing_count_header" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="copy_report" xml:space="preserve">
+    <value>Copy report</value>
+  </data>
+  <data name="open_file_location" xml:space="preserve">
+    <value>Open file location</value>
+  </data>
+  <data name="in_ap_short" xml:space="preserve">
+    <value>.ap</value>
+  </data>
   <data name="apply" xml:space="preserve">
     <value>Apply</value>
   </data>

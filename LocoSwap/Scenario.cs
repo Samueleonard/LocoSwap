@@ -147,6 +147,54 @@ namespace LocoSwap
             OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(ScenarioVehiclesExist)));
         }
 
+        /// <summary>
+        /// Runs a full consist parse (serz + XML) and returns every vehicle whose blueprint is
+        /// missing from the installed content, tagged with its consist. Also refreshes
+        /// <see cref="ScenarioVehiclesExist"/> and the <see cref="ScenarioConsistCache"/> entry.
+        /// Returns an empty list when the scenario is clean or could not be read. Safe to call
+        /// from a worker thread. Used by the "scan all routes for broken consists" report.
+        /// </summary>
+        public List<MissingConsistVehicle> FindMissingVehicles()
+        {
+            var missing = new List<MissingConsistVehicle>();
+            try
+            {
+                ReadScenario();
+                List<Consist> consists = GetConsists();
+                ScenarioConsistCache.Store(RouteId, Id, ApFileName, ScenarioVehiclesExist);
+
+                foreach (Consist consist in consists)
+                {
+                    foreach (ScenarioVehicle vehicle in consist.Vehicles)
+                    {
+                        if (vehicle.Exists != VehicleExistance.Missing && vehicle.Exists != VehicleExistance.MissingWithRule)
+                        {
+                            continue;
+                        }
+                        missing.Add(new MissingConsistVehicle
+                        {
+                            ConsistName = consist.Name,
+                            IsPlayerConsist = consist.IsPlayerConsist,
+                            VehicleName = vehicle.Name,
+                            Number = vehicle.Number,
+                            BlueprintPath = vehicle.XmlPath,
+                            HasRule = vehicle.Exists == VehicleExistance.MissingWithRule,
+                        });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Broken-consist scan failed for scenario {0}: {1}", Id, e);
+            }
+            finally
+            {
+                // The parsed XML is only needed for the scan; the edit window re-reads it.
+                ScenarioXml = null;
+            }
+            return missing;
+        }
+
         public void Load(Route route, string id)
         {
             RouteId = route.Id;

@@ -22,6 +22,12 @@
     <Resource Include="Resources\*.png" />
   </ItemGroup>
 
+  <!-- Ship the PDF manual next to the exe when it has been generated from the .docx source -->
+  <ItemGroup>
+    <Content Include="..\LocoSwap_manual.pdf" Link="LocoSwap_manual.pdf" CopyToOutputDirectory="PreserveNewest"
+             Condition="Exists('..\LocoSwap_manual.pdf')" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="LocoSwap.Tests" />
   </ItemGroup>

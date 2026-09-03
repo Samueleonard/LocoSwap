@@ -322,7 +322,7 @@ namespace LocoSwap
             }
         }
 
-        private static List<Scenario> BuildScenarioList(Route route)
+        internal static List<Scenario> BuildScenarioList(Route route)
         {
             var scenarios = new List<Scenario>();
             string routeDirectory = Route.GetRouteDirectory(route.Id);
@@ -393,6 +393,11 @@ namespace LocoSwap
                     Process.Start(new ProcessStartInfo(scenario.ScenarioDirectory) { UseShellExecute = true });
                 }
             }
+        }
+
+        private void ScanAllConsistsButton_Click(object sender, RoutedEventArgs e)
+        {
+            new ConsistScanWindow { Owner = this }.Show();
         }
 
         private async void SettingsButton_Click(object sender, RoutedEventArgs e)

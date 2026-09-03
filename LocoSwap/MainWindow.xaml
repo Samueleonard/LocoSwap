@@ -64,6 +64,9 @@
                            IsEnabled="{Binding SelectedItems.Count, ElementName=ScenarioList}"
                            Click="Delete_Scenarios_Click" Margin="0,0,6,0" />
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
+                <ui:Button Icon="{ui:SymbolIcon Search24}" Content="{loc:Loc scan_all_consists}"
+                           Click="ScanAllConsistsButton_Click" Margin="0,0,6,0" />
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
                 <ui:Button Icon="{ui:SymbolIcon Archive24}" Content="{loc:Loc archive_toggle}"
                            IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
                            Click="ToggleArchiveRoutes_Click" Margin="0,0,6,0" />
