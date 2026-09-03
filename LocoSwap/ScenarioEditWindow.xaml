@@ -11,7 +11,7 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        Title="{Binding WindowTitle}" Height="820" Width="1280" MinWidth="1000" MinHeight="640"
+        Title="{Binding WindowTitle}" Height="800" Width="1200" MinWidth="980" MinHeight="640"
         Closed="Window_Closed" KeyDown="Window_KeyDown">
     <ui:FluentWindow.Resources>
         <converters:VehicleStatusToImageConverter x:Key="VehicleStatusToImageConverter" />
@@ -44,20 +44,47 @@
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="12" />
         </Style>
         <Style x:Key="Thumb" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Width" Value="120" />
-            <Setter Property="Height" Value="80" />
+            <Setter Property="Width" Value="112" />
+            <Setter Property="Height" Value="72" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+
+        <!-- Contained, compact list styling for this window -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        </Style>
+        <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style TargetType="TreeView">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="4" />
         </Style>
         <Style x:Key="ActionButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+        <Style x:Key="Placeholder" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Margin" Value="16" />
+            <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
     </ui:FluentWindow.Resources>
 
@@ -77,7 +104,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" VerticalAlignment="Center" MaxWidth="560" HorizontalAlignment="Left">
+            <Grid Grid.Column="0" VerticalAlignment="Center" MaxWidth="520" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -95,7 +122,7 @@
             </Grid>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <StackPanel Margin="0,0,12,0" MinWidth="170" VerticalAlignment="Center"
+                <StackPanel Margin="0,0,12,0" MinWidth="160" VerticalAlignment="Center"
                             Visibility="{Binding LoadingGridVisibility}">
                     <TextBlock Text="{Binding LoadingInformation}" TextTrimming="CharacterEllipsis"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
@@ -125,24 +152,26 @@
         <!-- Workspace -->
         <Grid Grid.Row="2" Margin="12,0,12,12">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" MinWidth="320" />
+                <ColumnDefinition Width="5*" MinWidth="300" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="156" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="2*" MinWidth="320" />
+                <ColumnDefinition Width="5*" MinWidth="300" />
             </Grid.ColumnDefinitions>
 
             <!-- ===== Scenario side ===== -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3*" MinHeight="90" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="3*" MinHeight="90" />
+                    <RowDefinition Height="2*" MinHeight="80" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="3*" MinHeight="80" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <DockPanel Grid.Row="0">
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:Loc consists_in_scenario}" Style="{StaticResource SectionHeader}" />
+                <TextBlock Grid.Row="0" Text="{loc:Loc consists_in_scenario}" Style="{StaticResource SectionHeader}" />
+                <Border Grid.Row="1" Style="{StaticResource Card}">
                     <ListBox x:Name="ConsistListBox" ItemsSource="{Binding Consists}" SelectionChanged="ConsistListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -154,142 +183,186 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                </DockPanel>
+                </Border>
 
-                <GridSplitter Grid.Row="1" Height="8" HorizontalAlignment="Stretch" Background="Transparent" Margin="0,2" />
+                <GridSplitter Grid.Row="2" Height="8" HorizontalAlignment="Stretch" Background="Transparent" />
 
-                <DockPanel Grid.Row="2">
-                    <TextBlock DockPanel.Dock="Top" Text="{loc:Loc vehicles_in_selected_consist}" Style="{StaticResource SectionHeader}" />
-                    <ListBox x:Name="VehicleListBox" ItemsSource="{Binding Vehicles}" SelectionMode="Extended" SelectionChanged="VehicleListBox_SelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding Exists, Converter={StaticResource VehicleStatusToImageConverter}}" Width="10" Height="10" VerticalAlignment="Center" />
-                                    <Image Source="/Resources/Coupling.png" Visibility="{Binding IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}}" Height="12" Margin="6,0,0,0" VerticalAlignment="Center" />
-                                    <TextBlock ToolTip="{Binding PossibleSubstitutionDisplayName}" Margin="8,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} - {1}m">
-                                                <Binding Path="DisplayName" />
-                                                <Binding Path="Length" />
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
+                <TextBlock Grid.Row="3" Text="{loc:Loc vehicles_in_selected_consist}" Style="{StaticResource SectionHeader}" Margin="2,4,0,6" />
+                <Border Grid.Row="4" Style="{StaticResource Card}">
+                    <Grid>
+                        <ListBox x:Name="VehicleListBox" ItemsSource="{Binding Vehicles}" SelectionMode="Extended" SelectionChanged="VehicleListBox_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Exists, Converter={StaticResource VehicleStatusToImageConverter}}" Width="10" Height="10" VerticalAlignment="Center" />
+                                        <Image Source="/Resources/Coupling.png" Visibility="{Binding IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}}" Height="12" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                        <TextBlock ToolTip="{Binding PossibleSubstitutionDisplayName}" Margin="8,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} - {1}m">
+                                                    <Binding Path="DisplayName" />
+                                                    <Binding Path="Length" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock Text="{loc:Loc vehicles_in_selected_consist}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Items.Count, ElementName=VehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
 
                 <!-- Detail: the scenario vehicle being replaced -->
-                <Border Grid.Row="3" Style="{StaticResource Card}" Margin="0,8,0,0">
+                <Border Grid.Row="5" Style="{StaticResource Card}" Margin="0,10,0,0" Padding="12">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{loc:Loc vehicle_to_be_replaced}" Style="{StaticResource SectionHeader}" />
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{loc:Loc vehicle_to_be_replaced}"
-                                   Style="{StaticResource SectionHeader}" />
+                        <TextBlock Grid.Row="1" Margin="0,16" Text="{loc:Loc vehicle_to_be_replaced}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=VehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
-                        <Grid Grid.Row="1" Grid.Column="0" Margin="0,2,12,0">
+                        <Grid Grid.Row="1" x:Name="ReplaceDetail">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=VehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
-                                       Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=VehicleListBox}" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc number}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
-                                       Text="{Binding SelectedItem.Number, Mode=OneWay, ElementName=VehicleListBox}" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                       Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=VehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+
+                            <Grid Grid.Row="0" Grid.Column="0" Margin="0,2,12,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                           Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=VehicleListBox}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc number}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                           Text="{Binding SelectedItem.Number, Mode=OneWay, ElementName=VehicleListBox}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=VehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+                            </Grid>
+
+                            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
+                                <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=VehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
+                                <ui:Button x:Name="ChangeNumberButton" Content="{loc:Loc change_number}" Margin="0,0,6,0" Click="ChangeNumberButton_Click">
+                                    <ui:Button.Style>
+                                        <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Value="1">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:Button.Style>
+                                </ui:Button>
+                                <ui:Button x:Name="FlipButton" Content="{loc:Loc flip}" Margin="0,0,10,0"
+                                           IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Click="FlipButton_Click" />
+                                <CheckBox Content="{loc:Loc flipped}" VerticalAlignment="Center" IsEnabled="False"
+                                          IsChecked="{Binding SelectedItem.Flipped, Mode=OneWay, ElementName=VehicleListBox}" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                       Text="{loc:Loc involved_in_consist_operation}"
+                                       Visibility="{Binding SelectedItem.IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed, ElementName=VehicleListBox}" />
                         </Grid>
-
-                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
-                            <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=VehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
-                        </Border>
-
-                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
-                            <ui:Button x:Name="ChangeNumberButton" Content="{loc:Loc change_number}" Margin="0,0,6,0" Click="ChangeNumberButton_Click">
-                                <ui:Button.Style>
-                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Value="1">
-                                                <Setter Property="IsEnabled" Value="True"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ui:Button.Style>
-                            </ui:Button>
-                            <ui:Button x:Name="FlipButton" Content="{loc:Loc flip}" Margin="0,0,10,0"
-                                       IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Click="FlipButton_Click" />
-                            <CheckBox Content="{loc:Loc flipped}" VerticalAlignment="Center" IsEnabled="False"
-                                      IsChecked="{Binding SelectedItem.Flipped, Mode=OneWay, ElementName=VehicleListBox}" />
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" TextWrapping="Wrap"
-                                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-                                   Text="{loc:Loc involved_in_consist_operation}"
-                                   Visibility="{Binding SelectedItem.IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed, ElementName=VehicleListBox}" />
                     </Grid>
                 </Border>
             </Grid>
 
-            <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
+            <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" />
 
             <!-- ===== Action bar ===== -->
-            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="4,0">
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="2,0">
                 <ui:Button Content="{loc:Loc replace}" Style="{StaticResource ActionButton}" Appearance="Primary" Click="ReplaceButton_Click" x:Name="ReplaceButton" />
                 <ui:Button Content="{loc:Loc replace_identical}" Style="{StaticResource ActionButton}" Click="ReplaceIdenticalButton_Click" x:Name="ReplaceIdenticalButton" />
-                <CheckBox x:Name="AddAsRule" Content="{loc:Loc and_add_as_rule}" IsChecked="True" Margin="2,0,0,10" />
+                <CheckBox x:Name="AddAsRule" Content="{loc:Loc and_add_as_rule}" IsChecked="True" Margin="2,2,0,10" />
                 <ui:Button Content="{loc:Loc insert_before}" Style="{StaticResource ActionButton}" Click="InsertBeforeButton_Click" x:Name="InsertBeforeButton" />
                 <ui:Button Content="{loc:Loc insert_after}" Style="{StaticResource ActionButton}" Click="InsertAfterButton_Click" x:Name="InsertAfterButton" />
                 <ui:Button Content="{loc:Loc remove}" Style="{StaticResource ActionButton}" Click="RemoveButton_Click" x:Name="RemoveButton"
                            IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" />
-                <Separator Margin="0,6" />
-                <ui:Button Content="{loc:Loc add_to_rules}" Style="{StaticResource ActionButton}" Click="AddToRulesButton_Click" x:Name="AddToRulesButton" />
+                <Separator Margin="0,8" />
+                <ui:Button Content="{loc:Loc add_to_rules}" Style="{StaticResource ActionButton}" Click="AddToRulesButton_Click" x:Name="AddToRulesButton" Margin="0" />
             </StackPanel>
 
-            <GridSplitter Grid.Column="3" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
+            <GridSplitter Grid.Column="3" Width="10" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" />
 
             <!-- ===== Library side ===== -->
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="2*" MinHeight="90" />
+                    <RowDefinition Height="2*" MinHeight="80" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="3*" MinHeight="90" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="3*" MinHeight="80" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Text="{loc:Loc replace_with}" Style="{StaticResource SectionHeader}" />
-                <TreeView x:Name="DirectoryTree" Grid.Row="1" ItemsSource="{Binding Directories}" TreeViewItem.Expanded="TreeView_Expanded">
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding SubDirectories}">
-                            <TextBlock Text="{Binding Name}" />
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                    <TreeView.Resources>
-                        <Style TargetType="TreeViewItem">
-                            <Setter Property="IsSelected" Value="{Binding Path=IsSelected}"/>
-                        </Style>
-                    </TreeView.Resources>
-                </TreeView>
+                <Border Grid.Row="1" Style="{StaticResource Card}">
+                    <TreeView x:Name="DirectoryTree" ItemsSource="{Binding Directories}" TreeViewItem.Expanded="TreeView_Expanded">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding SubDirectories}">
+                                <TextBlock Text="{Binding Name}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.Resources>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsSelected" Value="{Binding Path=IsSelected}"/>
+                            </Style>
+                        </TreeView.Resources>
+                    </TreeView>
+                </Border>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,6">
                     <ui:Button x:Name="ScanButton" Icon="{ui:SymbolIcon Search24}" Content="{loc:Loc look_up_vehicles}" Margin="0,0,6,0"
@@ -306,61 +379,104 @@
                             PlaceholderText="{loc:Loc filter}" Icon="{ui:SymbolIcon Search24}" ClearButtonEnabled="True"
                             TextChanged="AvailableVehiclesFilter_TextChanged" />
 
-                <ListBox x:Name="AvailableVehicleListBox" Grid.Row="4" ItemsSource="{Binding Source={StaticResource AvailableVehiclesSource}}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} - {1}m">
-                                        <Binding Path="DisplayName" />
-                                        <Binding Path="Length" />
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Border Grid.Row="5" Style="{StaticResource Card}">
+                    <Grid>
+                        <ListBox x:Name="AvailableVehicleListBox" ItemsSource="{Binding Source={StaticResource AvailableVehiclesSource}}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} - {1}m">
+                                                <Binding Path="DisplayName" />
+                                                <Binding Path="Length" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock Text="{loc:Loc look_up_vehicles}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Items.Count, ElementName=AvailableVehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
 
                 <!-- Detail: the replacement vehicle chosen from the library -->
-                <Border Grid.Row="5" Style="{StaticResource Card}" Margin="0,8,0,0">
+                <Border Grid.Row="6" Style="{StaticResource Card}" Margin="0,10,0,0" Padding="12">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{loc:Loc new_vehicle_selected}" Style="{StaticResource SectionHeader}" />
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{loc:Loc new_vehicle_selected}"
-                                   Style="{StaticResource SectionHeader}" />
+                        <TextBlock Grid.Row="1" Margin="0,16" Text="{loc:Loc new_vehicle_selected}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=AvailableVehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
-                        <Grid Grid.Row="1" Grid.Column="0" Margin="0,2,12,0">
+                        <Grid Grid.Row="1">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=AvailableVehicleListBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
-                                       Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=AvailableVehicleListBox}" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                       Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=AvailableVehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+
+                            <Grid Grid.Row="0" Grid.Column="0" Margin="0,2,12,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                           Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=AvailableVehicleListBox}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=AvailableVehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+                            </Grid>
+
+                            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
+                                <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=AvailableVehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
+                            </Border>
+
+                            <ui:Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AvailableVehicleNumberListButton" HorizontalAlignment="Left"
+                                       Margin="0,10,0,0" Content="{loc:Loc numbering_list}" Click="AvailableVehicleNumberListButton_Click"
+                                       IsEnabled="{Binding ElementName=AvailableVehicleListBox, Path=SelectedItems.Count}" />
                         </Grid>
-
-                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
-                            <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=AvailableVehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
-                        </Border>
-
-                        <ui:Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AvailableVehicleNumberListButton" HorizontalAlignment="Left"
-                                   Margin="0,10,0,0" Content="{loc:Loc numbering_list}" Click="AvailableVehicleNumberListButton_Click"
-                                   IsEnabled="{Binding ElementName=AvailableVehicleListBox, Path=SelectedItems.Count}" />
                     </Grid>
                 </Border>
             </Grid>
