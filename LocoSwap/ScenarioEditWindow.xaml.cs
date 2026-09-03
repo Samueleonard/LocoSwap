@@ -32,8 +32,18 @@ namespace LocoSwap
             public Scenario Scenario
             {
                 get => _scenario;
-                set => SetProperty(ref _scenario, value);
+                set
+                {
+                    SetProperty(ref _scenario, value);
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(WindowTitle)));
+                }
             }
+
+            /// <summary>Localized window/title-bar caption, e.g. "Edit scenario: &lt;name&gt;".</summary>
+            public string WindowTitle =>
+                _scenario == null
+                    ? "LocoSwap"
+                    : string.Format(LocoSwap.Language.Resources.edit_scenario_title, _scenario.Name);
             private string _loadingInformation = "";
             public string LoadingInformation
             {

@@ -10,7 +10,7 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        Title="{Binding Scenario.Name, Mode=OneWay, StringFormat={loc:Loc edit_scenario_title}}" Height="985" Width="1315" MinWidth="1000" MinHeight="700" Closed="Window_Closed" KeyDown="Window_KeyDown">
+        Title="{Binding WindowTitle}" Height="985" Width="1315" MinWidth="1000" MinHeight="700" Closed="Window_Closed" KeyDown="Window_KeyDown">
     <ui:FluentWindow.Resources>
         <converters:VehicleStatusToImageConverter x:Key="VehicleStatusToImageConverter" />
         <converters:ConsistStatusToImageConverter x:Key="ConsistStatusToImageConverter" />
@@ -29,7 +29,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ui:TitleBar Grid.Row="0" Title="{Binding Scenario.Name, Mode=OneWay, StringFormat={loc:Loc edit_scenario_title}}" />
+        <ui:TitleBar Grid.Row="0" Title="{Binding WindowTitle}" />
         <Grid Grid.Row="1" Margin="0,0,-5,-6">
         <Label Content="{loc:Loc route}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Label Content="{loc:Loc scenario}" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
