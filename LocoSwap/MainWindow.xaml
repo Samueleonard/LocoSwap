@@ -11,7 +11,7 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        Title="{Binding WindowTitle}" Height="701" Width="1125" MinWidth="720" MinHeight="420">
+        Title="{Binding WindowTitle}" Height="701" Width="1125" MinWidth="1000" MinHeight="420">
     <ui:FluentWindow.Resources>
         <converters:ScenarioStatusToImageConverter x:Key="ScenarioStatusToImageConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -54,9 +54,9 @@
                                Click="OpenManual_Click" />
                 </StackPanel>
 
-                <!-- primary actions, scroll horizontally if the window is too narrow -->
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                    <StackPanel Orientation="Horizontal">
+                <!-- primary actions; clip at the card edge on very narrow windows
+                     (Settings/Help stay pinned on the right regardless) -->
+                <StackPanel Orientation="Horizontal" ClipToBounds="True">
                         <ui:Button x:Name="EditScenarioButton" Icon="{ui:SymbolIcon Edit24}" Appearance="Primary"
                                    Content="{loc:Loc edit_scenario}" Click="EditScenarioButton_Click" Margin="0,0,6,0">
                             <ui:Button.Style>
@@ -87,8 +87,7 @@
                                    ToolTip="AutoArchive"
                                    IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
                                    Click="ArchiveAllButSelectedRoutes_Click" />
-                    </StackPanel>
-                </ScrollViewer>
+                </StackPanel>
             </DockPanel>
         </Border>
 
