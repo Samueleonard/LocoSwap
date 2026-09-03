@@ -12,7 +12,7 @@
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
         Title="{Binding WindowTitle}" Height="800" Width="1200" MinWidth="980" MinHeight="640"
-        Closed="Window_Closed" KeyDown="Window_KeyDown">
+        Loaded="Window_Loaded" Closed="Window_Closed" KeyDown="Window_KeyDown">
     <ui:FluentWindow.Resources>
         <converters:VehicleStatusToImageConverter x:Key="VehicleStatusToImageConverter" />
         <converters:ConsistStatusToImageConverter x:Key="ConsistStatusToImageConverter" />

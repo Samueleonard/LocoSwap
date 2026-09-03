@@ -41,6 +41,66 @@ namespace LocoSwap
             set => SetProperty(ref _nameLocalisedString, value);
         }
 
+        /// <summary>
+        /// Rehydrate a vehicle from an <see cref="AvailableVehicleCache"/> snapshot without any
+        /// file IO or serz call. <paramref name="binPath"/> is the same backslash-separated
+        /// relative path the disk constructor takes (Provider\Product\...\x.bin).
+        /// </summary>
+        internal AvailableVehicle(AvailableVehicleCache.Entry entry, string binPath)
+        {
+            string[] binPathComponents = binPath.Split('\\');
+            Provider = binPathComponents[0];
+            Product = binPathComponents[1];
+            BlueprintId = Path.ChangeExtension(string.Join("\\", binPathComponents.Skip(2)), "xml");
+            Exists = VehicleExistance.Found;
+
+            Name = entry.Name;
+            Length = entry.Length;
+            Type = Enum.TryParse(entry.Type, out VehicleType parsedType) ? parsedType : VehicleType.Unknown;
+            EntityCount = entry.EntityCount;
+
+            CargoComponents = new List<(string Capacity, string AltEncoding)>();
+            for (int i = 0; i < entry.CargoCapacities.Length && i < entry.CargoAltEncodings.Length; ++i)
+            {
+                CargoComponents.Add((entry.CargoCapacities[i], entry.CargoAltEncodings[i]));
+            }
+            NumberingList = new List<string>(entry.NumberingList);
+
+            DisplayName = Name;
+            if (!string.IsNullOrEmpty(entry.NameLocalisedStringXml))
+            {
+                try
+                {
+                    _nameLocalisedString = XElement.Parse(entry.NameLocalisedStringXml);
+                    var preferred = Utilities.DetermineDisplayName(_nameLocalisedString);
+                    if (preferred != "") DisplayName = preferred;
+                }
+                catch (Exception e)
+                {
+                    Log.Debug("Could not parse cached localised name for {0}: {1}", binPath, e.Message);
+                }
+            }
+        }
+
+        /// <summary>Flatten this instance into a cache snapshot. Only valid for non-reskin vehicles.</summary>
+        internal AvailableVehicleCache.Entry ToCacheEntry()
+        {
+            return new AvailableVehicleCache.Entry
+            {
+                Provider = Provider,
+                Product = Product,
+                BlueprintId = BlueprintId,
+                Name = Name,
+                Length = Length,
+                Type = Type.ToString(),
+                EntityCount = EntityCount,
+                CargoCapacities = (CargoComponents ?? new()).Select(c => c.Capacity).ToArray(),
+                CargoAltEncodings = (CargoComponents ?? new()).Select(c => c.AltEncoding).ToArray(),
+                NumberingList = (NumberingList ?? new()).ToArray(),
+                NameLocalisedStringXml = _nameLocalisedString?.ToString() ?? "",
+            };
+        }
+
         public AvailableVehicle(string binPath, bool acceptReskin = true)
         {
             string[] binPathComponents = binPath.Split('\\');

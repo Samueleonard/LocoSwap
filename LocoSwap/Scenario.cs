@@ -33,6 +33,13 @@ namespace LocoSwap
 
         private XDocument ScenarioProperties;
         private XDocument ScenarioXml;
+
+        /// <summary>Test-only access to the parsed Scenario.bin document (normally filled by <see cref="ReadScenario"/>).</summary>
+        internal XDocument ScenarioXmlForTest
+        {
+            get => ScenarioXml;
+            set => ScenarioXml = value;
+        }
         private XNamespace Namespace = "http://www.kuju.com/TnT/2003/Delta";
         public string RouteId;
         private string _description;
@@ -262,10 +269,10 @@ namespace LocoSwap
                 switch (ScenarioProperties.XPathSelectElement("/cScenarioProperties/ScenarioClass").Value)
                 {
                     case "eFreeRoamScenarioClass":
-                        PlayerTrainName = "Free roam";
+                        PlayerTrainName = Language.Resources.player_train_free_roam;
                         break;
                     case "eTemplateScenarioClass":
-                        PlayerTrainName = "Quick drive";
+                        PlayerTrainName = Language.Resources.player_train_quick_drive;
                         break;
                     default:
                         PlayerTrainName = Utilities.DetermineDisplayName(ScenarioProperties.XPathSelectElement("(/cScenarioProperties/FrontEndDriverList/sDriverFrontEndDetails/LocoName[../PlayerDriver = 1])[last()]/Localisation-cUserLocalisedString"));
@@ -359,7 +366,7 @@ namespace LocoSwap
                 Consist consistObj = new Consist();
 
                 XElement driver = consist.Element("Driver").Element("cDriver");
-                string name = "Loose Consist";
+                string name = Language.Resources.consist_loose;
                 if (driver != null)
                 {
                     IEnumerable<XElement> names = driver.Element("ServiceName").Element("Localisation-cUserLocalisedString").Elements();
@@ -974,6 +981,34 @@ namespace LocoSwap
                 if (File.Exists(scenarioBackupFileName)) File.Copy(scenarioBackupFileName, scenarioFileName, true);
                 if (File.Exists(scenarioPropertiesBackupFileName)) File.Copy(scenarioPropertiesBackupFileName, scenarioPropertiesFileName, true);
                 throw;
+            }
+
+            PruneBackups();
+        }
+
+        /// <summary>
+        /// Keep only the newest <paramref name="keep"/> pairs of save backups in the scenario
+        /// folder so they do not accumulate without bound. Best effort - a failure here never
+        /// fails a save.
+        /// </summary>
+        private void PruneBackups(int keep = 10)
+        {
+            try
+            {
+                foreach (string pattern in new[] { "ScenarioBackup-*.bin", "ScenarioPropertiesBackup-*.xml" })
+                {
+                    string[] backups = Directory.GetFiles(ScenarioDirectory, pattern);
+                    Array.Sort(backups, StringComparer.Ordinal);
+                    // Timestamp suffix sorts lexically, so the oldest are first
+                    for (int i = 0; i < backups.Length - keep; i++)
+                    {
+                        File.Delete(backups[i]);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Could not prune scenario backups: {0}", e.Message);
             }
         }
 

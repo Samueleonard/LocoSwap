@@ -96,7 +96,24 @@ namespace LocoSwap
             ViewModel.Route = new Route(RouteId);
             ViewModel.Scenario = scenario;
             VehicleAvailibility.ClearTable();
-            ReadScenario();
+        }
+
+        private bool _scenarioRead;
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_scenarioRead) return;
+            _scenarioRead = true;
+            try
+            {
+                await ReadScenarioAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to read scenario {0}", ViewModel.Scenario?.Id);
+                MessageBox.Show(
+                    LocoSwap.Language.Resources.error_cannot_read_scenario + "\n\n" + ex.GetType().Name + ": " + ex.Message,
+                    LocoSwap.Language.Resources.msg_error, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private bool AvailableVehicleFilter(object item)
@@ -113,7 +130,7 @@ namespace LocoSwap
             AvailableVehicleFilterTextbox.Text = "";
         }
 
-        public async void ReadScenario()
+        private async Task ReadScenarioAsync()
         {
             IProgress<int> progress = new Progress<int>(value => { ViewModel.LoadingProgress = value; });
             ViewModel.LoadingInformation = LocoSwap.Language.Resources.reading_scenario_files;
@@ -157,10 +174,19 @@ namespace LocoSwap
 
         private void ConsistListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ReloadSelectedConsistVehicles();
+        }
+
+        /// <summary>Refill <see cref="ScenarioViewModel.Vehicles"/> from the currently selected consist.</summary>
+        private void ReloadSelectedConsistVehicles()
+        {
             ViewModel.Vehicles.Clear();
-            foreach (ScenarioVehicle vehicle in ((Consist)ConsistListBox.SelectedItem).Vehicles)
+            if (ConsistListBox.SelectedItem is Consist consist)
             {
-                ViewModel.Vehicles.Add(vehicle);
+                foreach (ScenarioVehicle vehicle in consist.Vehicles)
+                {
+                    ViewModel.Vehicles.Add(vehicle);
+                }
             }
         }
 
@@ -268,10 +294,47 @@ namespace LocoSwap
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            LookupVehicles(selected.Path);
+            _ = LookupVehiclesAsync(selected.Path);
         }
 
-        private async void LookupVehicles(string path)
+        /// <summary>
+        /// Parse one candidate rolling-stock <c>.bin</c> during a scan and add it to the
+        /// available list, consulting <see cref="AvailableVehicleCache"/> first. A stamp of
+        /// 0 (stat failed) disables caching for that entry. Runs on scan worker threads.
+        /// </summary>
+        private void ScanOneBin(string binPath, long ticks, long size)
+        {
+            AvailableVehicleCache.Entry cached = AvailableVehicleCache.TryGet(binPath, ticks, size);
+            if (cached != null)
+            {
+                if (cached.NotAVehicle) return;
+                var fromCache = new AvailableVehicle(cached, binPath);
+                App.Current.Dispatcher.Invoke((Action)delegate { ViewModel.AvailableVehicles.Add(fromCache); });
+                return;
+            }
+
+            try
+            {
+                var vehicle = new AvailableVehicle(binPath);
+                App.Current.Dispatcher.Invoke((Action)delegate { ViewModel.AvailableVehicles.Add(vehicle); });
+                if (!vehicle.IsReskin)
+                {
+                    AvailableVehicleCache.Store(binPath, ticks, size, vehicle.ToCacheEntry());
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Debug("{0}: {1}", e.Message, binPath);
+                // Only cache a definitive "the blueprint loaded fine but isn't rolling stock"
+                // result - never an IO/serz failure, which could poison the cache wholesale.
+                if (e.Message.Contains("not an engine"))
+                {
+                    AvailableVehicleCache.StoreNegative(binPath, ticks, size);
+                }
+            }
+        }
+
+        private async Task LookupVehiclesAsync(string path)
         {
             ScanCancellationTokenSource = new CancellationTokenSource();
             var token = ScanCancellationTokenSource.Token;
@@ -291,20 +354,16 @@ namespace LocoSwap
                     var binPath = fullBin.Replace(Settings.Default.TsPath + "\\Assets\\", "");
 
                     var index = item.i;
+                    long ticks = 0, size = 0;
                     try
                     {
-                        Log.Debug("Try: {0}", binPath);
-                        var vehicle = new AvailableVehicle(binPath);
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            ViewModel.AvailableVehicles.Add(vehicle);
-                        });
-                        Log.Debug("Found: {0}", vehicle.Name);
+                        var fi = new FileInfo(fullBin);
+                        ticks = fi.LastWriteTimeUtc.Ticks;
+                        size = fi.Length;
                     }
-                    catch (Exception e)
-                    {
-                        Log.Debug("{0}: {1}", e.Message, binPath);
-                    }
+                    catch (Exception) { /* fall through with ticks == 0: no caching */ }
+
+                    ScanOneBin(binPath, ticks, size);
 
                     progress.Report((int)Math.Ceiling((float)index / files.Count() * 100));
                     token.ThrowIfCancellationRequested();
@@ -321,6 +380,7 @@ namespace LocoSwap
                 Log.Debug("Operation cancelled");
                 ViewModel.LoadingProgress = 100;
                 ViewModel.VehicleScanInProgress = false;
+                AvailableVehicleCache.Flush();
 
                 return;
             }
@@ -348,25 +408,20 @@ namespace LocoSwap
 
                     var baseProgress = (int)Math.Ceiling((float)item.i / apFiles.Count() * 100);
                     var basePath = Path.GetDirectoryName(item.value).Replace(Settings.Default.TsPath + "\\Assets\\", "");
+                    long apTicks = 0, apSize = 0;
+                    try
+                    {
+                        var apInfo = new FileInfo(item.value);
+                        apTicks = apInfo.LastWriteTimeUtc.Ticks;
+                        apSize = apInfo.Length;
+                    }
+                    catch (Exception) { /* fall through with ticks == 0: no caching */ }
                     var binCount = binEntries.Count();
                     Log.Debug("There are {0} bin entries", binCount);
                     Parallel.ForEach(binEntries.Select((value, i) => (value, i)), (binItem) =>
                     {
                         var binPath = Path.Combine(basePath, binItem.value.Replace('/', '\\'));
-                        try
-                        {
-                            Log.Debug("Try {0}", binPath);
-                            var vehicle = new AvailableVehicle(binPath);
-                            App.Current.Dispatcher.Invoke((Action)delegate
-                            {
-                                ViewModel.AvailableVehicles.Add(vehicle);
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            // Most .bin files in an .ap are not rolling stock; only log at Debug
-                            Log.Debug("Skipping {0}: {1}", binPath, ex.Message);
-                        }
+                        ScanOneBin(binPath, apTicks, apSize);
 
                         var ownProgress = (int)Math.Ceiling((float)binItem.i / binCount * 100 / apFiles.Count());
                         progress.Report(baseProgress + ownProgress);
@@ -388,6 +443,7 @@ namespace LocoSwap
 
             ViewModel.LoadingProgress = 100;
             ViewModel.VehicleScanInProgress = false;
+            AvailableVehicleCache.Flush();
 
             // Add filter to AvailableVehicleList
             CollectionView AvailableVehicleListview = (CollectionView)CollectionViewSource.GetDefaultView(AvailableVehicleListBox.ItemsSource);
@@ -417,13 +473,7 @@ namespace LocoSwap
                 consist.Vehicles[i].Idx = i;
             }
 
-            ViewModel.Vehicles.Clear();
-            foreach (ScenarioVehicle scenarioVehicle in ((Consist)ConsistListBox.SelectedItem).Vehicles)
-            {
-                ViewModel.Vehicles.Add(scenarioVehicle);
-            }
-
-            return;
+            ReloadSelectedConsistVehicles();
         }
 
         private void InsertBeforeButton_Click(object sender, RoutedEventArgs e)
@@ -468,11 +518,7 @@ namespace LocoSwap
                 }
             }
 
-            ViewModel.Vehicles.Clear();
-            foreach (ScenarioVehicle scenarioVehicle in ((Consist)ConsistListBox.SelectedItem).Vehicles)
-            {
-                ViewModel.Vehicles.Add(scenarioVehicle);
-            }
+            ReloadSelectedConsistVehicles();
         }
 
         private void ReplaceButton_Click(object sender, RoutedEventArgs e)
@@ -499,45 +545,67 @@ namespace LocoSwap
             consist.DetermineCompletenessAfterReplace();
         }
 
-        private async void SaveScenario()
+        private async Task SaveScenarioAsync()
         {
             ViewModel.LoadingInformation = LocoSwap.Language.Resources.saving_scenario;
             ViewModel.LoadingProgress = 20;
-            var task = Task.Run(() =>
+
+            Exception failure = null;
+            await Task.Run(() =>
             {
                 try
                 {
                     ViewModel.Scenario.Save();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    return false;
+                    failure = ex;
                 }
-                return true;
             });
-            var result = await task;
             ViewModel.LoadingProgress = 100;
-            if (result)
+
+            if (failure == null)
             {
                 MessageBox.Show(
                     LocoSwap.Language.Resources.msg_scenario_saved,
                     LocoSwap.Language.Resources.msg_message,
                     MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
-            else
+
+            Exception e = failure;
+            if (e is UnauthorizedAccessException || e is IOException)
             {
+                Log.Warning(e, "Scenario save failed (write access)");
                 MessageBox.Show(
                     LocoSwap.Language.Resources.msg_write_access_denied,
                     LocoSwap.Language.Resources.msg_error,
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            return;
+            else
+            {
+                Log.Error(e, "Scenario save failed");
+                MessageBox.Show(
+                    LocoSwap.Language.Resources.msg_scenario_save_failed + "\n\n" + e.GetType().Name + ": " + e.Message,
+                    LocoSwap.Language.Resources.msg_error,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            SaveScenario();
-
+            try
+            {
+                await SaveScenarioAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unexpected error saving scenario");
+                MessageBox.Show(
+                    ex.GetType().Name + ": " + ex.Message,
+                    LocoSwap.Language.Resources.msg_error,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AvailableVehicleNumberListButton_Click(object sender, RoutedEventArgs e)
@@ -624,7 +692,7 @@ namespace LocoSwap
 
             Log.Information("Replace identical: {Count} vehicle(s) replaced with {Vehicle}", replacedCount, newVehicle.DisplayName);
             MessageBox.Show(
-                string.Format("{0} matching vehicle(s) were replaced with {1}.", replacedCount, newVehicle.DisplayName),
+                string.Format(LocoSwap.Language.Resources.msg_vehicles_replaced, replacedCount, newVehicle.DisplayName),
                 LocoSwap.Language.Resources.msg_message, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -899,7 +967,7 @@ namespace LocoSwap
             Log.Information("Apply all rules ({Mode}): {Count} vehicle(s) replaced",
                 onlyOnMissingStock ? "missing stock only" : "all stock", replacedCount);
             MessageBox.Show(
-                string.Format("{0} vehicle(s) were replaced by the replacement rules.", replacedCount),
+                string.Format(LocoSwap.Language.Resources.msg_vehicles_replaced_by_rules, replacedCount),
                 LocoSwap.Language.Resources.msg_message, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 

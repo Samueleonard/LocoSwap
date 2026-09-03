@@ -468,4 +468,22 @@
   <data name="vehicle_to_be_replaced" xml:space="preserve">
     <value>Vehicle to be replaced</value>
   </data>
+  <data name="msg_vehicles_replaced" xml:space="preserve">
+    <value>{0} matching vehicle(s) were replaced with {1}.</value>
+  </data>
+  <data name="msg_vehicles_replaced_by_rules" xml:space="preserve">
+    <value>{0} vehicle(s) were replaced by the replacement rules.</value>
+  </data>
+  <data name="player_train_free_roam" xml:space="preserve">
+    <value>Free roam</value>
+  </data>
+  <data name="player_train_quick_drive" xml:space="preserve">
+    <value>Quick drive</value>
+  </data>
+  <data name="consist_loose" xml:space="preserve">
+    <value>Loose Consist</value>
+  </data>
+  <data name="msg_scenario_save_failed" xml:space="preserve">
+    <value>The scenario could not be saved. The original files have been left untouched (a timestamped backup is in the scenario folder).</value>
+  </data>
 </root>

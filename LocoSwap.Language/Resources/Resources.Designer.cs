@@ -572,7 +572,61 @@ namespace LocoSwap.Language {
                 return ResourceManager.GetString("msg_vehicles_added_to_rules", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} matching vehicle(s) were replaced with {1}..
+        /// </summary>
+        public static string msg_vehicles_replaced {
+            get {
+                return ResourceManager.GetString("msg_vehicles_replaced", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} vehicle(s) were replaced by the replacement rules..
+        /// </summary>
+        public static string msg_vehicles_replaced_by_rules {
+            get {
+                return ResourceManager.GetString("msg_vehicles_replaced_by_rules", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Free roam.
+        /// </summary>
+        public static string player_train_free_roam {
+            get {
+                return ResourceManager.GetString("player_train_free_roam", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Quick drive.
+        /// </summary>
+        public static string player_train_quick_drive {
+            get {
+                return ResourceManager.GetString("player_train_quick_drive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Loose Consist.
+        /// </summary>
+        public static string consist_loose {
+            get {
+                return ResourceManager.GetString("consist_loose", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The scenario could not be saved. The original files have been left untouched (a timestamped backup is in the scenario folder)..
+        /// </summary>
+        public static string msg_scenario_save_failed {
+            get {
+                return ResourceManager.GetString("msg_scenario_save_failed", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Access denied while trying to write to scenario files. Please check that Scenario.bin and ScenarioProperties.xml are not write protected..
         /// </summary>
