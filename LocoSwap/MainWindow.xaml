@@ -47,16 +47,17 @@
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
             <DockPanel LastChildFill="True">
                 <!-- meta actions, pinned to the right edge -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="8,0,0,0">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top" Margin="8,0,0,0">
                     <ui:Button x:Name="SettingsButton" Icon="{ui:SymbolIcon Settings24}"
                                Content="{loc:Loc settings}" Click="SettingsButton_Click" Margin="0,0,6,0" />
                     <ui:Button Icon="{ui:SymbolIcon QuestionCircle24}" ToolTip="{loc:Loc open_manual}"
                                Click="OpenManual_Click" />
                 </StackPanel>
 
-                <!-- primary actions; clip at the card edge on very narrow windows
-                     (Settings/Help stay pinned on the right regardless) -->
-                <StackPanel Orientation="Horizontal" ClipToBounds="True">
+                <!-- primary actions; scroll horizontally when the window is too narrow.
+                     The 14px bottom lane keeps the scrollbar clear of the buttons. -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
                         <ui:Button x:Name="EditScenarioButton" Icon="{ui:SymbolIcon Edit24}" Appearance="Primary"
                                    Content="{loc:Loc edit_scenario}" Click="EditScenarioButton_Click" Margin="0,0,6,0">
                             <ui:Button.Style>
@@ -87,7 +88,8 @@
                                    ToolTip="AutoArchive"
                                    IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
                                    Click="ArchiveAllButSelectedRoutes_Click" />
-                </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
         </Border>
 
