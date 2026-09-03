@@ -18,7 +18,7 @@ namespace LocoSwap
     /// <summary>
     /// Interaction logic for ScenarioEditWindow.xaml
     /// </summary>
-    public partial class ScenarioEditWindow : Window
+    public partial class ScenarioEditWindow : Wpf.Ui.Controls.FluentWindow
     {
         public class ScenarioViewModel : ModelBase
         {

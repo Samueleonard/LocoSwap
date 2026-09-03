@@ -1,13 +1,17 @@
-﻿<Window x:Class="LocoSwap.ScenarioEditWindow"
+﻿<ui:FluentWindow x:Class="LocoSwap.ScenarioEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:LocoSwap.Converters" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:loc="clr-namespace:LocoSwap"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="{Binding Scenario.Name, Mode=OneWay, StringFormat={loc:Loc edit_scenario_title}}" Height="919" Width="1315" Closed="Window_Closed" KeyDown="Window_KeyDown">
-    <Window.Resources>
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        Title="{Binding Scenario.Name, Mode=OneWay, StringFormat={loc:Loc edit_scenario_title}}" Height="985" Width="1315" MinWidth="1000" MinHeight="700" Closed="Window_Closed" KeyDown="Window_KeyDown">
+    <ui:FluentWindow.Resources>
         <converters:VehicleStatusToImageConverter x:Key="VehicleStatusToImageConverter" />
         <converters:ConsistStatusToImageConverter x:Key="ConsistStatusToImageConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
@@ -19,8 +23,14 @@
                 <scm:SortDescription PropertyName="DisplayName"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
-    </Window.Resources>
-    <Grid Margin="0,0,-5,-6">
+    </ui:FluentWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar Grid.Row="0" Title="{Binding Scenario.Name, Mode=OneWay, StringFormat={loc:Loc edit_scenario_title}}" />
+        <Grid Grid.Row="1" Margin="0,0,-5,-6">
         <Label Content="{loc:Loc route}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Label Content="{loc:Loc scenario}" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
         <TextBox Text="{Binding Scenario.Name, Mode=OneWay}" HorizontalAlignment="Left" Height="23" Margin="73,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="549" IsReadOnly="True" Focusable="False"/>
@@ -179,5 +189,6 @@
         <Button HorizontalAlignment="Left" Margin="1121,473,0,0" VerticalAlignment="Top" Height="18" Click="EmptyAvailableVehicleFilter_Click">
             <Image Source="/Resources/Delete.png"/>
         </Button>
+        </Grid>
     </Grid>
-</Window>
+</ui:FluentWindow>
