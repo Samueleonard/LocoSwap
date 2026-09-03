@@ -42,6 +42,10 @@ namespace LocoSwap.Properties
         private string _scenarioNameSuffix = "[LoSw]";
         public string ScenarioNameSuffix { get => _scenarioNameSuffix; set => Set(ref _scenarioNameSuffix, value); }
 
+        private string _theme = "System";
+        /// <summary>UI theme: "System", "Light" or "Dark".</summary>
+        public string Theme { get => _theme; set => Set(ref _theme, value); }
+
         private bool _checkScenarioConsists;
         public bool CheckScenarioConsists { get => _checkScenarioConsists; set => Set(ref _checkScenarioConsists, value); }
 

@@ -8,7 +8,7 @@ namespace LocoSwap
     /// <summary>
     /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : Wpf.Ui.Controls.FluentWindow
     {
         public class LanguageListItem
         {
@@ -84,6 +84,11 @@ namespace LocoSwap
             Log.Debug("Change language to {0}", Settings.Default.Language);
             var app = (App)Application.Current;
             app.SetLanguageDictionary();
+        }
+
+        private void ThemeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ThemeManager.Apply();
         }
 
         private void Window_Closed(object sender, System.EventArgs e)

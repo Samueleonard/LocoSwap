@@ -49,6 +49,8 @@ namespace LocoSwap
 
             SetLanguageDictionary();
 
+            ThemeManager.Apply();
+
             if (!Directory.Exists(Utilities.GetTempDir()))
             {
                 Directory.CreateDirectory(Utilities.GetTempDir());

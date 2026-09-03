@@ -48,6 +48,7 @@ namespace LocoSwap
         public MainWindow()
         {
             InitializeComponent();
+            ThemeManager.Watch(this);
             UpdateColumnVisibility();
             RestoreWindowPlacement();
 
@@ -399,7 +400,7 @@ namespace LocoSwap
             bool previousCheckScenarioConsistsValue = Settings.Default.CheckScenarioConsists;
             string previousLanguage = Settings.Default.Language;
 
-            new SettingsWindow().ShowDialog();
+            new SettingsWindow { Owner = this }.ShowDialog();
 
             if (previousCheckScenarioConsistsValue != Settings.Default.CheckScenarioConsists)
             {

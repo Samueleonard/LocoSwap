@@ -124,7 +124,7 @@
                     </GridView>
                 </ListView.View>
                 <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsArchived}" Value="True">
                                 <Setter Property="Opacity" Value="0.5" />
@@ -152,7 +152,7 @@
                          Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <ListView x:Name="ScenarioList" ItemsSource="{Binding Source={StaticResource ScenariosSource}}" MouseDoubleClick="ScenarioList_MouseDoubleClick">
                 <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                         <Setter Property="ToolTip">
                             <Setter.Value>
                                 <UniformGrid Columns="1">
