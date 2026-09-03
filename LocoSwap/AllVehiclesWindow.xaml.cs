@@ -7,7 +7,7 @@ namespace LocoSwap
     /// <summary>
     /// Interaction logic for AllVehiclesWindow.xaml
     /// </summary>
-    public partial class AllVehiclesWindow : Window
+    public partial class AllVehiclesWindow : Wpf.Ui.Controls.FluentWindow
     {
         public class VehiclesViewModel : ModelBase
         {

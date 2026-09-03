@@ -544,7 +544,7 @@ namespace LocoSwap
         {
             AvailableVehicle vehicle = (AvailableVehicle)AvailableVehicleListBox.SelectedItem;
             if (vehicle == null) return;
-            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(vehicle.NumberingList, VehicleNumberSelectionWindow.WindowType.List);
+            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(vehicle.NumberingList, VehicleNumberSelectionWindow.WindowType.List) { Owner = this };
             window.ShowDialog();
         }
 
@@ -564,7 +564,7 @@ namespace LocoSwap
                 Log.Debug("ChangeNumberButton: could not load numbering list for {0}: {1}", vehicle.XmlPath, ex.Message);
             }
 
-            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(list, VehicleNumberSelectionWindow.WindowType.Selection, vehicle.Number);
+            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(list, VehicleNumberSelectionWindow.WindowType.Selection, vehicle.Number) { Owner = this };
             window.ShowDialog();
 
             if (window.DialogResult == true)
@@ -814,7 +814,7 @@ namespace LocoSwap
             {
                 list.Add(kvpair.Value);
             }
-            AllVehiclesWindow window = new AllVehiclesWindow(list);
+            AllVehiclesWindow window = new AllVehiclesWindow(list) { Owner = this };
             window.ShowDialog();
         }
 

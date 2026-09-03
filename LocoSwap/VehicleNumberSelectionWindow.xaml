@@ -1,29 +1,52 @@
-﻿<Window x:Class="LocoSwap.VehicleNumberSelectionWindow"
+<ui:FluentWindow x:Class="LocoSwap.VehicleNumberSelectionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:loc="clr-namespace:LocoSwap"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="{loc:Loc select_vehicle_number}" Height="469.086" Width="252.286" ResizeMode="NoResize">
-    <Window.Resources>
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Loc select_vehicle_number}" Height="480" Width="320" MinWidth="260" MinHeight="320">
+    <ui:FluentWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </Window.Resources>
-    <Grid Margin="0,0,0,0">
-        <ListBox x:Name="NumberListBox" ItemsSource="{Binding CandidateNumbers}" HorizontalAlignment="Left" Height="299" Margin="10,10,10,0" VerticalAlignment="Top" Width="213" SelectionChanged="ListBox_SelectionChanged">
+    </ui:FluentWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="{loc:Loc select_vehicle_number}" />
+
+        <ListBox x:Name="NumberListBox" Grid.Row="1" Margin="12,4,12,8"
+                 ItemsSource="{Binding CandidateNumbers}" SelectionChanged="ListBox_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" Margin="0,0,0,0" />
+                    <TextBlock Text="{Binding}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Visibility="{Binding IsSelection, Converter={StaticResource BoolToVis}}" x:Name="CancelButton" Content="{loc:Loc cancel}" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" IsCancel="True" Height="26" VerticalAlignment="Bottom"/>
-        <Button x:Name="OkButton" Content="{loc:Loc ok}" HorizontalAlignment="Left" Margin="148,0,0,10" Width="75" IsDefault="True" Click="OkButton_Click" Height="26" VerticalAlignment="Bottom"/>
-        <Grid Visibility="{Binding IsSelection, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Left" Height="90" Margin="0,309,0,0" VerticalAlignment="Top" Width="234">
-            <TextBlock Text="{loc:Loc enter_number_manually}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="42" Width="214" />
 
-            <TextBox Text="{Binding Number}" HorizontalAlignment="Left" Height="23" Margin="11,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="213"/>
-        </Grid>
+        <StackPanel Grid.Row="2" Margin="12,0,12,8"
+                    Visibility="{Binding IsSelection, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{loc:Loc enter_number_manually}" TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,6" />
+            <ui:TextBox Text="{Binding Number}" />
+        </StackPanel>
 
+        <Border Grid.Row="3" Padding="12,10" Background="{DynamicResource ControlFillColorDefaultBrush}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button x:Name="CancelButton" Content="{loc:Loc cancel}" IsCancel="True" MinWidth="84" Margin="0,0,6,0"
+                           Visibility="{Binding IsSelection, Converter={StaticResource BoolToVis}}" />
+                <ui:Button x:Name="OkButton" Content="{loc:Loc ok}" IsDefault="True" Appearance="Primary"
+                           MinWidth="84" Click="OkButton_Click" />
+            </StackPanel>
+        </Border>
     </Grid>
-</Window>
+</ui:FluentWindow>

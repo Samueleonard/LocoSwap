@@ -11,7 +11,7 @@ namespace LocoSwap
     /// <summary>
     /// Interaction logic for SwapPresetWindow.xaml
     /// </summary>
-    public partial class SwapPresetWindow : Window
+    public partial class SwapPresetWindow : Wpf.Ui.Controls.FluentWindow
     {
         public event EventHandler ApplyClicked;
         public List<SwapPresetItem> SelectedItems

@@ -1,47 +1,66 @@
-﻿<Window x:Class="LocoSwap.SwapPresetWindow"
+<ui:FluentWindow x:Class="LocoSwap.SwapPresetWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:p="clr-namespace:LocoSwap.Properties"
         xmlns:loc="clr-namespace:LocoSwap"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="{loc:Loc replacement_rules_management}" Height="379" Width="600">
-    <Window.Resources>
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        Title="{loc:Loc replacement_rules_management}" Height="440" Width="640" MinWidth="420" MinHeight="300">
+    <ui:FluentWindow.Resources>
         <DataTemplate x:Key="FirstCell">
-            <StackPanel Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding Path=IsSelected, 
-                          RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
-            </StackPanel>
+            <CheckBox IsChecked="{Binding Path=IsSelected,
+                      RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
         </DataTemplate>
         <DataTemplate x:Key="FindCell">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding TargetName}" ToolTip="{Binding TargetXmlPath}"/>
-            </StackPanel>
+            <TextBlock Text="{Binding TargetName}" ToolTip="{Binding TargetXmlPath}"/>
         </DataTemplate>
         <DataTemplate x:Key="ReplaceWithCell">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding NewName}" ToolTip="{Binding NewXmlPath}"/>
-            </StackPanel>
+            <TextBlock Text="{Binding NewName}" ToolTip="{Binding NewXmlPath}"/>
         </DataTemplate>
-    </Window.Resources>
-    <Grid Margin="0,0,0,-6">
-        <ListView x:Name="PresetList" Margin="10,40,10,40" ItemsSource="{Binding Source={x:Static p:Settings.Default}, Path=Preset.List, Mode=OneWay}" SelectionMode="Multiple">
+    </ui:FluentWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="{loc:Loc replacement_rules_management}" />
+
+        <ui:TextBox Grid.Row="1" x:Name="PresetsFilterTextbox" Margin="12,4,12,8"
+                    PlaceholderText="{loc:Loc filter}" Icon="{ui:SymbolIcon Search24}" ClearButtonEnabled="True"
+                    TextChanged="PresetsFilter_TextChanged" />
+
+        <ListView x:Name="PresetList" Grid.Row="2" Margin="12,0,12,0"
+                  ItemsSource="{Binding Source={x:Static p:Settings.Default}, Path=Preset.List, Mode=OneWay}"
+                  SelectionMode="Multiple">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn CellTemplate="{StaticResource FirstCell}" Width="30"/>
-                    <GridViewColumn CellTemplate="{StaticResource FindCell}" Header="{loc:Loc rule_find}" Width="254"/>
-                    <GridViewColumn CellTemplate="{StaticResource ReplaceWithCell}" Header="{loc:Loc rule_replace}" Width="254" />
+                    <GridViewColumn CellTemplate="{StaticResource FirstCell}" Width="34"/>
+                    <GridViewColumn CellTemplate="{StaticResource FindCell}" Header="{loc:Loc rule_find}" Width="280"/>
+                    <GridViewColumn CellTemplate="{StaticResource ReplaceWithCell}" Header="{loc:Loc rule_replace}" Width="280" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="ApplyButton" Content="{loc:Loc apply}" HorizontalAlignment="Left" Margin="10,0,0,10.5" Width="119" VerticalAlignment="Bottom" Click="ApplyButton_Click"/>
-        <Button x:Name="DeleteButton" Content="{loc:Loc delete}" HorizontalAlignment="Left" Margin="134,0,0,10.5" Width="117" VerticalAlignment="Bottom" Click="DeleteButton_Click"/>
-        <Button x:Name="CloseButton" Content="{loc:Loc close}" Margin="0,0,10,10.5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="CloseButton_Click"/>
-        <Label Content="{loc:Loc filter}" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top"/>
-        <TextBox Name="PresetsFilterTextbox" TextChanged="PresetsFilter_TextChanged" HorizontalAlignment="Left" Margin="72,13,0,0" VerticalAlignment="Top" Width="164"/>
-        <Button HorizontalAlignment="Left" Margin="236,13,0,0" VerticalAlignment="Top" Height="18" Click="EmptyPresetFilter_Click">
-            <Image Source="/Resources/Delete.png"/>
-        </Button>
+
+        <Border Grid.Row="3" Padding="12,10" Background="{DynamicResource ControlFillColorDefaultBrush}">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <ui:Button x:Name="ApplyButton" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary"
+                               Content="{loc:Loc apply}" Margin="0,0,6,0" Click="ApplyButton_Click"/>
+                    <ui:Button x:Name="DeleteButton" Icon="{ui:SymbolIcon Delete24}"
+                               Content="{loc:Loc delete}" Click="DeleteButton_Click"/>
+                </StackPanel>
+                <ui:Button x:Name="CloseButton" Content="{loc:Loc close}" HorizontalAlignment="Right"
+                           MinWidth="90" Click="CloseButton_Click"/>
+            </Grid>
+        </Border>
     </Grid>
-</Window>
+</ui:FluentWindow>

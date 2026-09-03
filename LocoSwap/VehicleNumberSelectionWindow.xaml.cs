@@ -8,7 +8,7 @@ namespace LocoSwap
     /// <summary>
     /// Interaction logic for VehicleNumberSelectionWindow.xaml
     /// </summary>
-    public partial class VehicleNumberSelectionWindow : Window
+    public partial class VehicleNumberSelectionWindow : Wpf.Ui.Controls.FluentWindow
     {
         public enum WindowType
         {
