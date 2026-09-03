@@ -11,7 +11,7 @@
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        Title="{Binding WindowTitle}" Height="840" Width="1240" MinWidth="960" MinHeight="620"
+        Title="{Binding WindowTitle}" Height="820" Width="1280" MinWidth="1000" MinHeight="640"
         Closed="Window_Closed" KeyDown="Window_KeyDown">
     <ui:FluentWindow.Resources>
         <converters:VehicleStatusToImageConverter x:Key="VehicleStatusToImageConverter" />
@@ -28,13 +28,36 @@
 
         <Style x:Key="SectionHeader" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Margin" Value="0,0,0,6" />
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Margin" Value="2,0,0,6" />
         </Style>
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+        <Style x:Key="FieldValue" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style x:Key="Thumb" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="80" />
+        </Style>
+        <Style x:Key="ActionButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,6" />
         </Style>
     </ui:FluentWindow.Resources>
 
@@ -47,14 +70,14 @@
 
         <ui:TitleBar Grid.Row="0" Title="{Binding WindowTitle}" />
 
-        <!-- Header band: scenario identity + top-level actions -->
-        <Grid Grid.Row="1" Margin="12,4,12,8">
+        <!-- Header band -->
+        <Grid Grid.Row="1" Margin="12,4,12,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" VerticalAlignment="Center" MaxWidth="640" HorizontalAlignment="Left">
+            <Grid Grid.Column="0" VerticalAlignment="Center" MaxWidth="560" HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -72,12 +95,11 @@
             </Grid>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <StackPanel Margin="0,0,12,0" MinWidth="180"
+                <StackPanel Margin="0,0,12,0" MinWidth="170" VerticalAlignment="Center"
                             Visibility="{Binding LoadingGridVisibility}">
                     <TextBlock Text="{Binding LoadingInformation}" TextTrimming="CharacterEllipsis"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                    <ProgressBar x:Name="LoadingProgressBar" Height="4" Margin="0,4,0,0"
-                                 Value="{Binding LoadingProgress}" />
+                    <ProgressBar x:Name="LoadingProgressBar" Height="4" Margin="0,4,0,0" Value="{Binding LoadingProgress}" />
                 </StackPanel>
 
                 <ui:DropDownButton Icon="{ui:SymbolIcon ArrowSync24}" Content="{loc:Loc apply_all_rules}" Margin="0,0,6,0">
@@ -100,22 +122,23 @@
             </StackPanel>
         </Grid>
 
-        <!-- Workspace: three resizable columns -->
+        <!-- Workspace -->
         <Grid Grid.Row="2" Margin="12,0,12,12">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="340" MinWidth="240" />
+                <ColumnDefinition Width="2*" MinWidth="320" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="180" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="380" MinWidth="280" />
+                <ColumnDefinition Width="2*" MinWidth="320" />
             </Grid.ColumnDefinitions>
 
-            <!-- Column 1: consists + vehicles in the scenario -->
+            <!-- ===== Scenario side ===== -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" MinHeight="120" />
+                    <RowDefinition Height="3*" MinHeight="90" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" MinHeight="120" />
+                    <RowDefinition Height="3*" MinHeight="90" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <DockPanel Grid.Row="0">
@@ -133,7 +156,7 @@
                     </ListBox>
                 </DockPanel>
 
-                <GridSplitter Grid.Row="1" Height="6" HorizontalAlignment="Stretch" Background="Transparent" Margin="0,2" />
+                <GridSplitter Grid.Row="1" Height="8" HorizontalAlignment="Stretch" Background="Transparent" Margin="0,2" />
 
                 <DockPanel Grid.Row="2">
                     <TextBlock DockPanel.Dock="Top" Text="{loc:Loc vehicles_in_selected_consist}" Style="{StaticResource SectionHeader}" />
@@ -156,121 +179,102 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
+
+                <!-- Detail: the scenario vehicle being replaced -->
+                <Border Grid.Row="3" Style="{StaticResource Card}" Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{loc:Loc vehicle_to_be_replaced}"
+                                   Style="{StaticResource SectionHeader}" />
+
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="0,2,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                       Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=VehicleListBox}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc number}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                       Text="{Binding SelectedItem.Number, Mode=OneWay, ElementName=VehicleListBox}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=VehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+                        </Grid>
+
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
+                            <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=VehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
+                        </Border>
+
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
+                            <ui:Button x:Name="ChangeNumberButton" Content="{loc:Loc change_number}" Margin="0,0,6,0" Click="ChangeNumberButton_Click">
+                                <ui:Button.Style>
+                                    <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Value="1">
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ui:Button.Style>
+                            </ui:Button>
+                            <ui:Button x:Name="FlipButton" Content="{loc:Loc flip}" Margin="0,0,10,0"
+                                       IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Click="FlipButton_Click" />
+                            <CheckBox Content="{loc:Loc flipped}" VerticalAlignment="Center" IsEnabled="False"
+                                      IsChecked="{Binding SelectedItem.Flipped, Mode=OneWay, ElementName=VehicleListBox}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                   Text="{loc:Loc involved_in_consist_operation}"
+                                   Visibility="{Binding SelectedItem.IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed, ElementName=VehicleListBox}" />
+                    </Grid>
+                </Border>
             </Grid>
 
-            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
+            <GridSplitter Grid.Column="1" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
 
-            <!-- Column 2: replace/insert actions and vehicle details -->
-            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
-                <StackPanel>
-                    <GroupBox Header="{loc:Loc vehicle_to_be_replaced}" Margin="0,0,0,10">
-                        <Grid Margin="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+            <!-- ===== Action bar ===== -->
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="4,0">
+                <ui:Button Content="{loc:Loc replace}" Style="{StaticResource ActionButton}" Appearance="Primary" Click="ReplaceButton_Click" x:Name="ReplaceButton" />
+                <ui:Button Content="{loc:Loc replace_identical}" Style="{StaticResource ActionButton}" Click="ReplaceIdenticalButton_Click" x:Name="ReplaceIdenticalButton" />
+                <CheckBox x:Name="AddAsRule" Content="{loc:Loc and_add_as_rule}" IsChecked="True" Margin="2,0,0,10" />
+                <ui:Button Content="{loc:Loc insert_before}" Style="{StaticResource ActionButton}" Click="InsertBeforeButton_Click" x:Name="InsertBeforeButton" />
+                <ui:Button Content="{loc:Loc insert_after}" Style="{StaticResource ActionButton}" Click="InsertAfterButton_Click" x:Name="InsertAfterButton" />
+                <ui:Button Content="{loc:Loc remove}" Style="{StaticResource ActionButton}" Click="RemoveButton_Click" x:Name="RemoveButton"
+                           IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" />
+                <Separator Margin="0,6" />
+                <ui:Button Content="{loc:Loc add_to_rules}" Style="{StaticResource ActionButton}" Click="AddToRulesButton_Click" x:Name="AddToRulesButton" />
+            </StackPanel>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,6" />
-                            <ui:TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True"
-                                        Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=VehicleListBox}" />
+            <GridSplitter Grid.Column="3" Width="8" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc number}" Style="{StaticResource FieldLabel}" Margin="0,0,8,6" />
-                            <ui:TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True"
-                                        Text="{Binding SelectedItem.Number, Mode=OneWay, ElementName=VehicleListBox}" />
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" Margin="0,0,8,6" />
-                            <ui:TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True" TextWrapping="Wrap"
-                                        Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=VehicleListBox, StringFormat='\Assets\{0}'}" />
-
-                            <Image Grid.Row="3" Grid.Column="1" Height="130" HorizontalAlignment="Left" Margin="0,2,0,8"
-                                   Source="{Binding SelectedItem, Mode=OneWay, ElementName=VehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
-
-                            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <ui:Button x:Name="ChangeNumberButton" Content="{loc:Loc change_number}" Margin="0,0,6,0" Click="ChangeNumberButton_Click">
-                                    <ui:Button.Style>
-                                        <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                                            <Setter Property="IsEnabled" Value="False"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Value="1">
-                                                    <Setter Property="IsEnabled" Value="True"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ui:Button.Style>
-                                </ui:Button>
-                                <ui:Button x:Name="FlipButton" Content="{loc:Loc flip}" Margin="0,0,10,0"
-                                           IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" Click="FlipButton_Click" />
-                                <CheckBox Content="{loc:Loc flipped}" VerticalAlignment="Center" IsEnabled="False"
-                                          IsChecked="{Binding SelectedItem.Flipped, Mode=OneWay, ElementName=VehicleListBox}" />
-                            </StackPanel>
-
-                            <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,40,0,0" TextWrapping="Wrap"
-                                       Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-                                       Text="{loc:Loc involved_in_consist_operation}"
-                                       Visibility="{Binding SelectedItem.IsInvolvedInConsistOperation, Converter={StaticResource BoolToVis}, FallbackValue=Collapsed, ElementName=VehicleListBox}" />
-                        </Grid>
-                    </GroupBox>
-
-                    <UniformGrid Columns="2" Margin="0,0,0,6">
-                        <ui:Button Content="{loc:Loc replace}" HorizontalAlignment="Stretch" Margin="0,0,3,3" Appearance="Primary" Click="ReplaceButton_Click" x:Name="ReplaceButton" />
-                        <ui:Button Content="{loc:Loc replace_identical}" HorizontalAlignment="Stretch" Margin="3,0,0,3" Click="ReplaceIdenticalButton_Click" x:Name="ReplaceIdenticalButton" />
-                        <ui:Button Content="{loc:Loc insert_before}" HorizontalAlignment="Stretch" Margin="0,3,3,3" Click="InsertBeforeButton_Click" x:Name="InsertBeforeButton" />
-                        <ui:Button Content="{loc:Loc insert_after}" HorizontalAlignment="Stretch" Margin="3,3,0,3" Click="InsertAfterButton_Click" x:Name="InsertAfterButton" />
-                        <ui:Button Content="{loc:Loc remove}" HorizontalAlignment="Stretch" Margin="0,3,3,0" Click="RemoveButton_Click" x:Name="RemoveButton"
-                                   IsEnabled="{Binding ElementName=VehicleListBox, Path=SelectedItems.Count}" />
-                        <ui:Button Content="{loc:Loc add_to_rules}" HorizontalAlignment="Stretch" Margin="3,3,0,0" Click="AddToRulesButton_Click" x:Name="AddToRulesButton" />
-                    </UniformGrid>
-                    <CheckBox x:Name="AddAsRule" Content="{loc:Loc and_add_as_rule}" IsChecked="True" Margin="0,0,0,10" />
-
-                    <GroupBox Header="{loc:Loc new_vehicle_selected}">
-                        <Grid Margin="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,6" />
-                            <ui:TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True"
-                                        Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=AvailableVehicleListBox}" />
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" Margin="0,0,8,6" />
-                            <ui:TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True" TextWrapping="Wrap"
-                                        Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=AvailableVehicleListBox, StringFormat='\Assets\{0}'}" />
-
-                            <Image Grid.Row="2" Grid.Column="1" Height="130" HorizontalAlignment="Left" Margin="0,2,0,8"
-                                   Source="{Binding SelectedItem, Mode=OneWay, ElementName=AvailableVehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
-
-                            <ui:Button Grid.Row="3" Grid.Column="1" x:Name="AvailableVehicleNumberListButton" HorizontalAlignment="Left"
-                                       Content="{loc:Loc numbering_list}" Click="AvailableVehicleNumberListButton_Click"
-                                       IsEnabled="{Binding ElementName=AvailableVehicleListBox, Path=SelectedItems.Count}" />
-                        </Grid>
-                    </GroupBox>
-                </StackPanel>
-            </ScrollViewer>
-
-            <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" Margin="3,0" />
-
-            <!-- Column 3: asset browser + available vehicles -->
+            <!-- ===== Library side ===== -->
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" MinHeight="120" />
+                    <RowDefinition Height="2*" MinHeight="90" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" MinHeight="120" />
+                    <RowDefinition Height="3*" MinHeight="90" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Text="{loc:Loc replace_with}" Style="{StaticResource SectionHeader}" />
@@ -316,6 +320,49 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+
+                <!-- Detail: the replacement vehicle chosen from the library -->
+                <Border Grid.Row="5" Style="{StaticResource Card}" Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{loc:Loc new_vehicle_selected}"
+                                   Style="{StaticResource SectionHeader}" />
+
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="0,2,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Loc name}" Style="{StaticResource FieldLabel}" Margin="0,0,8,4" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldValue}" Margin="0,0,0,4"
+                                       Text="{Binding SelectedItem.DisplayName, Mode=OneWay, ElementName=AvailableVehicleListBox}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Loc path}" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding SelectedItem.DisplayXmlPath, Mode=OneWay, ElementName=AvailableVehicleListBox, StringFormat=\\Assets\\\{0\}}" />
+                        </Grid>
+
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Thumb}" VerticalAlignment="Top">
+                            <Image Source="{Binding SelectedItem, Mode=OneWay, ElementName=AvailableVehicleListBox, Converter={StaticResource VehicleImageSourceConverter}}" />
+                        </Border>
+
+                        <ui:Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AvailableVehicleNumberListButton" HorizontalAlignment="Left"
+                                   Margin="0,10,0,0" Content="{loc:Loc numbering_list}" Click="AvailableVehicleNumberListButton_Click"
+                                   IsEnabled="{Binding ElementName=AvailableVehicleListBox, Path=SelectedItems.Count}" />
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
     </Grid>

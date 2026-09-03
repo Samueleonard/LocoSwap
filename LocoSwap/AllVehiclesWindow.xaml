@@ -76,7 +76,7 @@
                                VerticalAlignment="Center" Margin="0,0,8,6"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     <ui:TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" IsReadOnly="True" TextWrapping="Wrap"
-                                Text="{Binding SelectedItem.DisplayXmlPath, ElementName=VehicleListBox, Mode=OneWay, StringFormat='\Assets\{0}'}" />
+                                Text="{Binding SelectedItem.DisplayXmlPath, ElementName=VehicleListBox, Mode=OneWay, StringFormat=\\Assets\\\{0\}}" />
 
                     <CheckBox Grid.Row="3" Grid.Column="1" Content="{x:Static Language:Resources.flipped}" IsEnabled="False"
                               Margin="0,0,0,6"
