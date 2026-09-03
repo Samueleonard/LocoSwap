@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace LocoSwap
 {
@@ -73,7 +73,7 @@ namespace LocoSwap
 
             if (!IsInvolvedInConsistOperation && from.NumberingList.Count > 0)
             {
-                int index = Utilities.StaticRandom.Instance.Next(from.NumberingList.Count);
+                int index = System.Random.Shared.Next(from.NumberingList.Count);
                 Number = from.NumberingList[index];
             }
         }

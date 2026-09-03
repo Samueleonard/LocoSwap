@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 
@@ -89,6 +89,8 @@ namespace LocoSwap.Converters
             string image;
             switch (status)
             {
+                case ScenarioVehicleExistance.NotChecked:
+                    return string.Empty;
                 case ScenarioVehicleExistance.AllFound:
                     image = "BulletGreen.png";
                     break;

@@ -1,3 +1,17 @@
+# CHANGELOG 1.7.0.0 (03-09-2026)
+* Ported to .NET 10 (from .NET Framework 4.8)
+* Settings now stored as `%AppData%\LocoSwap\settings.json`; existing settings are imported automatically on first run
+* Removed the abandoned DotNetZip and WindowsAPICodePack dependencies
+* Faster startup on large Train Simulator installs (route and scenario scanning moved off the UI thread, `.ap` archive listings cached)
+* "Check all scenario consists when selecting route" is much faster: scenarios are checked in parallel, results are cached between selections (and re-used until a scenario changes), and each status dot appears as soon as its own check finishes instead of the list freezing until all are done
+* Fixed: Quick Drive / template scenarios (which have no editable consist) were wrongly listed and crashed the app when opened; they are now correctly skipped
+* Crash dialog with log location instead of silent exit on unhandled errors
+* Window size/position and last-selected route remembered between sessions
+* Bulk swap operations report how many vehicles were replaced
+* Completed the German translation (was ~30 strings behind) and filled small gaps in French and Italian
+* Added Spanish and Polish translations
+* Changing the UI language now takes effect immediately - the main window and every open window retranslate on the spot instead of only applying to windows opened afterwards
+
 # CHANGELOG 1.6.1.0 (05-01-2024)
 * When selecting a missing vehicle, automatically focus the closest matching asset folder
 * Add Dutch translation

@@ -1,0 +1,52 @@
+name: build
+
+on:
+  push:
+    branches: [dev, master, main]
+    tags: ['v*']
+  pull_request:
+    branches: [dev, master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore LocoSwap.sln
+
+      - name: Verify formatting
+        run: dotnet format LocoSwap.sln --verify-no-changes --severity warn --no-restore
+
+      - name: Build
+        run: dotnet build LocoSwap.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test LocoSwap.sln -c Release --no-build --verbosity normal
+
+      - name: Publish self-contained single-file exe
+        run: >
+          dotnet publish LocoSwap/LocoSwap.csproj -c Release -r win-x64
+          --self-contained
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocoSwap-win-x64
+          path: publish/LocoSwap.exe
+          if-no-files-found: error
+
+      - name: Attach exe to GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: gh release upload "${{ github.ref_name }}" publish/LocoSwap.exe --clobber
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

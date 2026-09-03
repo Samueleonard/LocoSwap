@@ -1,20 +1,36 @@
-﻿using LocoSwap.Properties;
-using Microsoft.WindowsAPICodePack.Dialogs;
+#nullable enable
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Xml.Linq;
+using LocoSwap.Properties;
 
 namespace LocoSwap
 {
     static class Utilities
     {
-        private static XNamespace Namespace = "http://www.kuju.com/TnT/2003/Delta";
+        private static readonly XNamespace Namespace = "http://www.kuju.com/TnT/2003/Delta";
+
+        private static readonly FrozenDictionary<string, string> LanguageConversionTable = new Dictionary<string, string>
+        {
+            { "en", "English" },
+            { "fr", "French" },
+            { "it", "Italian" },
+            { "de", "German" },
+            { "es", "Spanish" },
+            { "nl", "Dutch" },
+            { "pl", "Polish" },
+            { "ru", "Russian" },
+        }.ToFrozenDictionary();
+
         public static string GetTempDir()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "temp");
+            // Anchored to the install directory rather than the current working directory,
+            // which serz.exe and file dialogs can move out from under us.
+            return Path.Combine(AppContext.BaseDirectory, "temp");
         }
         public static string GetSerzPath()
         {
@@ -33,70 +49,53 @@ namespace LocoSwap
             var valid = false;
             while (!valid)
             {
-                using (var dialog = new CommonOpenFileDialog())
+                var dialog = new Microsoft.Win32.OpenFolderDialog
                 {
-                    dialog.Title = Language.Resources.select_ts_path;
-                    dialog.IsFolderPicker = true;
+                    Title = Language.Resources.select_ts_path
+                };
 
-                    var result = dialog.ShowDialog();
-                    if (result != CommonFileDialogResult.Ok)
-                    {
-                        return false;
-                    }
-                    var path = dialog.FileName;
-                    var tsExe = Path.Combine(path, "RailWorks.exe");
-                    if (!File.Exists(tsExe))
-                    {
-                        MessageBox.Show(Language.Resources.msg_ts_path_invalid, Language.Resources.msg_error, MessageBoxButton.OK, MessageBoxImage.Warning);
-                        continue;
-                    }
-                    Settings.Default.TsPath = path;
-                    Settings.Default.Save();
-                    valid = true;
+                if (dialog.ShowDialog() != true)
+                {
+                    return false;
                 }
+                var path = dialog.FolderName;
+                var tsExe = Path.Combine(path, "RailWorks.exe");
+                if (!File.Exists(tsExe))
+                {
+                    MessageBox.Show(Language.Resources.msg_ts_path_invalid, Language.Resources.msg_error, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    continue;
+                }
+                Settings.Default.TsPath = path;
+                Settings.Default.Save();
+                valid = true;
             }
             return true;
         }
 
-        public static void CopyUserLocalisedString(XElement dest, XElement orig)
+        public static void CopyUserLocalisedString(XElement? dest, XElement? orig)
         {
             if (dest == null || orig == null) return;
             var names = new string[] { "English", "French", "Italian", "German", "Spanish", "Dutch", "Polish", "Russian", "Key" };
             foreach (var name in names)
             {
-                XElement destName = dest.Element(name);
-                XElement origName = orig.Element(name);
+                XElement? destName = dest.Element(name);
+                XElement? origName = orig.Element(name);
                 if (destName != null && origName != null)
                 {
                     destName.Value = origName.Value;
                 }
             }
-            dest.Element("Other").Elements().Remove();
+            dest.Element("Other")?.Elements().Remove();
         }
 
-        public static string DetermineDisplayName(XElement localisedString)
+        public static string DetermineDisplayName(XElement? localisedString)
         {
             if (localisedString == null) return "";
 
             var lang = Settings.Default.Language;
-            if (lang == "") lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
-            var langConversionTable = new Dictionary<string, string>()
-            {
-                { "en", "English" },
-                { "fr", "French" },
-                { "it", "Italian" },
-                { "de", "German" },
-                { "es", "Spanish" },
-                { "nl", "Dutch" },
-                { "pl", "Polish" },
-                { "ru", "Russian" }
-            };
-            var convertedLang = "en";
-            if (langConversionTable.ContainsKey(lang))
-            {
-                convertedLang = langConversionTable[lang];
-            }
-            XElement preferredElement = localisedString.Element(convertedLang);
+            if (lang == "") lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            var convertedLang = LanguageConversionTable.GetValueOrDefault(lang, "English");
+            XElement? preferredElement = localisedString.Element(convertedLang);
             if (preferredElement != null)
             {
                 if (preferredElement.Value != "") return preferredElement.Value;
@@ -115,13 +114,11 @@ namespace LocoSwap
             return result;
         }
 
-        public static Tuple<ulong, ulong> GetUUIDLongs(Guid guid)
+        public static (ulong Low, ulong High) GetUUIDLongs(Guid guid)
         {
-            var result = new Tuple<ulong, ulong>(
+            return (
                 BitConverter.ToUInt64(guid.ToByteArray(), 0),
                 BitConverter.ToUInt64(guid.ToByteArray(), 8));
-
-            return result;
         }
 
         public static XElement GenerateCGUID()
@@ -133,11 +130,11 @@ namespace LocoSwap
 
             var e1 = new XElement("e");
             e1.SetAttributeValue(Namespace + "type", "sUInt64");
-            e1.SetValue(ulongs.Item1);
+            e1.SetValue(ulongs.Low);
 
             var e2 = new XElement("e");
             e2.SetAttributeValue(Namespace + "type", "sUInt64");
-            e2.SetValue(ulongs.Item2);
+            e2.SetValue(ulongs.High);
 
             UUID.Add(e1, e2);
 
@@ -169,27 +166,12 @@ namespace LocoSwap
             return newNode;
         }
 
-        public static class StaticRandom
-        {
-            private static int seed;
-
-            private static ThreadLocal<Random> threadLocal = new ThreadLocal<Random>
-                (() => new Random(Interlocked.Increment(ref seed)));
-
-            static StaticRandom()
-            {
-                seed = Environment.TickCount;
-            }
-
-            public static Random Instance { get { return threadLocal.Value; } }
-        }
-
         public static void OpenManual()
         {
             string manualFileName = "LocoSwap_manual.pdf";
             if (File.Exists(manualFileName))
             {
-                System.Diagnostics.Process.Start(manualFileName);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(manualFileName) { UseShellExecute = true });
             }
         }
     }

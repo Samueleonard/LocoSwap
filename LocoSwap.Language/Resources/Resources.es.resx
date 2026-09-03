@@ -118,61 +118,61 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="add_to_rules" xml:space="preserve">
-    <value>Créer règle</value>
+    <value>Añadir a las reglas</value>
   </data>
   <data name="all_vehicles" xml:space="preserve">
-    <value>Lister tous les véhicules</value>
+    <value>Listar todos los vehículos</value>
   </data>
   <data name="and_add_as_rule" xml:space="preserve">
-    <value>et créer règle</value>
+    <value>y añadir como regla</value>
   </data>
   <data name="apply" xml:space="preserve">
-    <value>Appliquer</value>
+    <value>Aplicar</value>
   </data>
   <data name="apply_all_rules" xml:space="preserve">
-    <value>Appliquer toutes les règles</value>
+    <value>Aplicar todas las reglas</value>
   </data>
   <data name="archive_rest" xml:space="preserve">
-    <value>Archiver toutes routes sauf sélectionnées</value>
+    <value>Archivar todas las rutas excepto la seleccionada</value>
   </data>
   <data name="archive_toggle" xml:space="preserve">
-    <value>Archiver/Désarchiver</value>
+    <value>Archivar/Desarchivar</value>
   </data>
   <data name="archive_without_db_loaded_prompt_message" xml:space="preserve">
-    <value>Etes-vous sûr de vouloir archiver maintenant ? La base des scénarios est en train d'être scannée et vous pourriez perdre certains statuts de complétion. Le mieux est de cliquer sur "non" et de réessayer dans quelques instants.</value>
+    <value>¿Seguro que quieres archivar rutas mientras aún se está analizando la base de datos de escenarios? Existe el riesgo de perder algunos estados de finalización de escenarios. Es mejor pulsar «No» y esperar unos segundos antes de volver a intentar archivar.</value>
   </data>
   <data name="archive_without_db_loaded_prompt_title" xml:space="preserve">
-    <value>Voulez-vous vraiment archiver maintenant ?</value>
+    <value>¿Seguro que quieres archivar ahora?</value>
   </data>
   <data name="author" xml:space="preserve">
-    <value>Auteur</value>
+    <value>Autor</value>
   </data>
   <data name="browse" xml:space="preserve">
-    <value>Parcourir...</value>
+    <value>Examinar ...</value>
   </data>
   <data name="cancel" xml:space="preserve">
-    <value>Annuler</value>
+    <value>Cancelar</value>
   </data>
   <data name="change_number" xml:space="preserve">
-    <value>Changer numérotation</value>
+    <value>Cambiar número</value>
   </data>
   <data name="check_all_scenario_consists" xml:space="preserve">
-    <value>Contrôler toutes les rames de tous les scénarios à la sélection d'une route (lent !)</value>
+    <value>Comprobar las composiciones de todos los escenarios al seleccionar una ruta (¡será lento!)</value>
   </data>
   <data name="clear_vehicles" xml:space="preserve">
-    <value>Vider</value>
+    <value>Vaciar</value>
   </data>
   <data name="close" xml:space="preserve">
-    <value>Fermer</value>
+    <value>Cerrar</value>
   </data>
   <data name="completion" xml:space="preserve">
-    <value>Terminé</value>
+    <value>Finalización</value>
   </data>
   <data name="completion_completedfailed" xml:space="preserve">
-    <value>Échoué</value>
+    <value>Fallido</value>
   </data>
   <data name="completion_completedsuccessfully" xml:space="preserve">
-    <value>Réussi</value>
+    <value>Completado</value>
   </data>
   <data name="completion_notcompleted" xml:space="preserve">
     <value />
@@ -180,253 +180,253 @@
   <data name="completion_notindb" xml:space="preserve">
     <value />
   </data>
+  <data name="completion_unknown" xml:space="preserve">
+    <value>?</value>
+  </data>
   <data name="consists_in_scenario" xml:space="preserve">
-    <value>Rames du scénario</value>
+    <value>Composiciones en el escenario</value>
   </data>
   <data name="delete" xml:space="preserve">
-    <value>Supprimer</value>
+    <value>Eliminar</value>
   </data>
   <data name="delete_scenarios" xml:space="preserve">
-    <value>Supprimer scénarios</value>
+    <value>Eliminar escenarios</value>
   </data>
   <data name="do_not_auto_archive_workshop_routes" xml:space="preserve">
-    <value>AutoArchive ne doit pas archiver les scénarios du workshop</value>
+    <value>AutoArchivar no debe archivar rutas del Workshop</value>
   </data>
   <data name="duration" xml:space="preserve">
-    <value>Durée</value>
+    <value>Duración</value>
   </data>
   <data name="edit_scenario" xml:space="preserve">
-    <value>Éditer le scenario</value>
+    <value>Editar escenario</value>
   </data>
   <data name="edit_scenario_title" xml:space="preserve">
-    <value>Éditer le scenario {0}</value>
+    <value>Editar escenario: {0}</value>
   </data>
   <data name="enter_number_manually" xml:space="preserve">
-    <value>Ou saisissez le numéro :</value>
+    <value>O introduce el número de vehículo manualmente:</value>
   </data>
   <data name="error_cannot_read_scenario" xml:space="preserve">
-    <value>Erreur : impossible de lire les détails du scénario (XML malformé)</value>
+    <value>Error: no se pueden leer los detalles del escenario (XML con formato incorrecto)</value>
   </data>
   <data name="filter" xml:space="preserve">
-    <value>Filtrer</value>
+    <value>Filtrar</value>
   </data>
   <data name="flip" xml:space="preserve">
-    <value>Inverser véhicule</value>
+    <value>Girar vehículo</value>
   </data>
   <data name="flipped" xml:space="preserve">
-    <value>Inversé ?</value>
+    <value>¿Girado?</value>
   </data>
   <data name="game_save_date" xml:space="preserve">
-    <value>Date sauvegarde</value>
+    <value>Fecha de guardado</value>
   </data>
   <data name="hide_played_scenarios" xml:space="preserve">
-    <value>Cacher scénarios joués</value>
+    <value>Ocultar escenarios jugados</value>
   </data>
   <data name="id" xml:space="preserve">
     <value>ID</value>
   </data>
   <data name="insert_after" xml:space="preserve">
-    <value>Insérer v</value>
+    <value>Insertar v</value>
   </data>
   <data name="insert_before" xml:space="preserve">
-    <value>Insérer ^</value>
+    <value>Insertar ^</value>
   </data>
   <data name="involved_in_consist_operation" xml:space="preserve">
-    <value>Ce véhicule apparaît dans des instructions de couplage/découplage. LocoSwap conservera son numéro.</value>
+    <value>Este vehículo está implicado en instrucciones de enganche/desenganche. LocoSwap conservará su número.</value>
   </data>
   <data name="language" xml:space="preserve">
-    <value>Langue</value>
+    <value>Idioma</value>
   </data>
   <data name="loading" xml:space="preserve">
-    <value>Chargement...</value>
+    <value>Cargando...</value>
   </data>
   <data name="look_up_vehicles" xml:space="preserve">
-    <value>Scanner véhicules</value>
+    <value>Buscar vehículos</value>
   </data>
   <data name="msg_cannot_load_vehicle" xml:space="preserve">
-    <value>Impossible de charger le véhicule "{0}"!</value>
+    <value>¡No se pudo cargar el vehículo «{0}»!</value>
   </data>
   <data name="msg_consist_empty" xml:space="preserve">
-    <value>Il doit rester au moins un véhicule dans la rame</value>
+    <value>¡La composición debe contener al menos un vehículo después de la eliminación!</value>
   </data>
   <data name="msg_error" xml:space="preserve">
-    <value>Erreur</value>
+    <value>Error</value>
   </data>
   <data name="msg_first_time" xml:space="preserve">
-    <value>Premier lancement : sélectionnez le chemin de votre Train Simulator</value>
+    <value>Primera ejecución: selecciona el directorio de Train Simulator.</value>
   </data>
   <data name="msg_flip_completed" xml:space="preserve">
-    <value>Les véhicules sélectionnés ont été inversés</value>
+    <value>Los vehículos seleccionados se han girado correctamente.</value>
   </data>
   <data name="msg_message" xml:space="preserve">
-    <value>Message</value>
+    <value>Mensaje</value>
   </data>
   <data name="msg_no_directory_selected" xml:space="preserve">
-    <value>Merci de sélectionner un dossier.</value>
+    <value>Selecciona primero un directorio.</value>
   </data>
   <data name="msg_no_vehicle_selected" xml:space="preserve">
-    <value>Merci de sélectionner un véhicule.</value>
+    <value>Selecciona primero los vehículos.</value>
   </data>
   <data name="msg_scenario_saved" xml:space="preserve">
-    <value>Le scénario a bien été sauvegardé.</value>
-  </data>
-  <data name="msg_ts_path_invalid" xml:space="preserve">
-    <value>Le chemin sélectionné est invalide ! (Vérifiez qu'il contient RailWorks.exe)</value>
-  </data>
-  <data name="msg_ts_path_required" xml:space="preserve">
-    <value>Un chemin valide vers TS est nécessaire à cette application. L'application va se terminer.</value>
-  </data>
-  <data name="msg_vehicles_added_to_rules" xml:space="preserve">
-    <value>Les règles ont bien été créées pour ces véhicules.</value>
-  </data>
-  <data name="msg_vehicle_already_in_rules" xml:space="preserve">
-    <value>Le véhicule "{0}" a déjà une règle de remplacement. Écraser cette règle ?</value>
-  </data>
-  <data name="msg_write_access_denied" xml:space="preserve">
-    <value>Accès en écriture refusé. Vérifiez que Scenario.bin et ScenarioProperties.xml ne sont pas protégés en écriture.</value>
-  </data>
-  <data name="name" xml:space="preserve">
-    <value>Nom</value>
-  </data>
-  <data name="new_vehicle_selected" xml:space="preserve">
-    <value>Nouveau véhicule sélectionné</value>
-  </data>
-  <data name="number" xml:space="preserve">
-    <value>Numéro</value>
-  </data>
-  <data name="numbering_list" xml:space="preserve">
-    <value>Liste de numérotation</value>
-  </data>
-  <data name="numbering_list_not_found" xml:space="preserve">
-    <value>Pas de liste de numérotation trouvée. Saisissez le numéro manuellement.</value>
-  </data>
-  <data name="ok" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="only_on_missing_stock" xml:space="preserve">
-    <value>uniquement aux véhicules manquants (en jaune)</value>
-  </data>
-  <data name="on_all_stock" xml:space="preserve">
-    <value>à tous les véhicules</value>
-  </data>
-  <data name="open_manual" xml:space="preserve">
-    <value>Ouvrir le manuel</value>
-  </data>
-  <data name="open_scenario_directory" xml:space="preserve">
-    <value>Ouvrir le dossier du scénario</value>
-  </data>
-  <data name="path" xml:space="preserve">
-    <value>Chemin</value>
-  </data>
-  <data name="player_train_name" xml:space="preserve">
-    <value>Train du joueur</value>
-  </data>
-  <data name="reading_scenario_files" xml:space="preserve">
-    <value>Chargement du scénario...</value>
-  </data>
-  <data name="remove" xml:space="preserve">
-    <value>Supprimer</value>
-  </data>
-  <data name="replace" xml:space="preserve">
-    <value>Remplacer</value>
-  </data>
-  <data name="replacement_rules" xml:space="preserve">
-    <value>Règles de remplacement</value>
-  </data>
-  <data name="replacement_rules_management" xml:space="preserve">
-    <value>Gestion des règles de remplacement</value>
-  </data>
-  <data name="replace_identical" xml:space="preserve">
-    <value>Remplacer les identiques</value>
-  </data>
-  <data name="replace_with" xml:space="preserve">
-    <value>Remplacer par</value>
-  </data>
-  <data name="route" xml:space="preserve">
-    <value>Ligne</value>
-  </data>
-  <data name="rule" xml:space="preserve">
-    <value>Règle</value>
-  </data>
-  <data name="rule_find" xml:space="preserve">
-    <value>Chercher...</value>
-  </data>
-  <data name="rule_replace" xml:space="preserve">
-    <value>Remplacer par...</value>
-  </data>
-  <data name="save" xml:space="preserve">
-    <value>Sauvegarder</value>
-  </data>
-  <data name="saving_scenario" xml:space="preserve">
-    <value>Enregistrement du scénario...</value>
-  </data>
-  <data name="scanning_ap_files" xml:space="preserve">
-    <value>Scan des fichiers .ap...</value>
-  </data>
-  <data name="scanning_bin_files" xml:space="preserve">
-    <value>Scan des fichiers .bin...</value>
-  </data>
-  <data name="scenario" xml:space="preserve">
-    <value>Scénario</value>
-  </data>
-  <data name="scenario_delete_prompt_message" xml:space="preserve">
-    <value>Etes-vous sûr de vouloir supprimer le(s) scénario(s) sélectionné(s) ?</value>
-  </data>
-  <data name="scenario_delete_prompt_title" xml:space="preserve">
-    <value>Suppression de scénario(s)</value>
-  </data>
-  <data name="scenario_in_ap" xml:space="preserve">
-    <value>*** Ce scénario est dans un fichier .ap. LocoSwap l'extraira automatiquement au moment de la sauvegarde. ***</value>
-  </data>
-  <data name="scenario_name_suffix" xml:space="preserve">
-    <value>Suffixe au nom du scénario</value>
-  </data>
-  <data name="season" xml:space="preserve">
-    <value>Saison</value>
-  </data>
-  <data name="season_autumn" xml:space="preserve">
-    <value>Automne</value>
-  </data>
-  <data name="season_spring" xml:space="preserve">
-    <value>Printemps</value>
-  </data>
-  <data name="season_summer" xml:space="preserve">
-    <value>Été</value>
-  </data>
-  <data name="season_winter" xml:space="preserve">
-    <value>Hiver</value>
-  </data>
-  <data name="select_ts_path" xml:space="preserve">
-    <value>Sélectionnez le chemin de Train Simulator</value>
-  </data>
-  <data name="select_vehicle_number" xml:space="preserve">
-    <value>Sélection du numéro de véhicule</value>
-  </data>
-  <data name="settings" xml:space="preserve">
-    <value>Options</value>
-  </data>
-  <data name="start_time" xml:space="preserve">
-    <value>Heure</value>
-  </data>
-  <data name="ts_directory" xml:space="preserve">
-    <value>Dossier Train Simulator</value>
-  </data>
-  <data name="use_system_language" xml:space="preserve">
-    <value>Utiliser la langue système</value>
-  </data>
-  <data name="vehicles_in_selected_consist" xml:space="preserve">
-    <value>Véhicules de la rame</value>
-  </data>
-  <data name="vehicle_selected" xml:space="preserve">
-    <value>Véhicule sélectionné</value>
-  </data>
-  <data name="vehicle_to_be_replaced" xml:space="preserve">
-    <value>Véhicule à remplacer</value>
-  </data>
-  <data name="completion_unknown" xml:space="preserve">
-    <value>?</value>
+    <value>Los archivos del escenario se han guardado correctamente.</value>
   </data>
   <data name="msg_swap_completed" xml:space="preserve">
-    <value>Échange terminé avec succès.</value>
+    <value>Sustitución completada correctamente.</value>
+  </data>
+  <data name="msg_ts_path_invalid" xml:space="preserve">
+    <value>¡La ruta seleccionada no es válida! (Comprueba si contiene RailWorks.exe)</value>
+  </data>
+  <data name="msg_ts_path_required" xml:space="preserve">
+    <value>Se necesita una ruta válida de TS para ejecutar esta aplicación. La aplicación se cerrará ahora.</value>
+  </data>
+  <data name="msg_vehicles_added_to_rules" xml:space="preserve">
+    <value>Vehículos añadidos correctamente a las reglas de sustitución.</value>
+  </data>
+  <data name="msg_vehicle_already_in_rules" xml:space="preserve">
+    <value>¡El vehículo «{0}» ya está en las reglas de sustitución! ¿Actualizar esta regla?</value>
+  </data>
+  <data name="msg_write_access_denied" xml:space="preserve">
+    <value>Acceso denegado al intentar escribir en los archivos del escenario. Comprueba que Scenario.bin y ScenarioProperties.xml no estén protegidos contra escritura.</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="new_vehicle_selected" xml:space="preserve">
+    <value>Nuevo vehículo seleccionado</value>
+  </data>
+  <data name="number" xml:space="preserve">
+    <value>Número</value>
+  </data>
+  <data name="numbering_list" xml:space="preserve">
+    <value>Lista de numeración</value>
+  </data>
+  <data name="numbering_list_not_found" xml:space="preserve">
+    <value>Lista de numeración no encontrada; introduce el número manualmente.</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>Aceptar</value>
+  </data>
+  <data name="only_on_missing_stock" xml:space="preserve">
+    <value>solo en material ausente (amarillos)</value>
+  </data>
+  <data name="on_all_stock" xml:space="preserve">
+    <value>en todo el material</value>
+  </data>
+  <data name="open_manual" xml:space="preserve">
+    <value>Abrir manual</value>
+  </data>
+  <data name="open_scenario_directory" xml:space="preserve">
+    <value>Abrir directorio del escenario</value>
+  </data>
+  <data name="path" xml:space="preserve">
+    <value>Ruta</value>
+  </data>
+  <data name="player_train_name" xml:space="preserve">
+    <value>Tren del jugador</value>
+  </data>
+  <data name="reading_scenario_files" xml:space="preserve">
+    <value>Leyendo archivos del escenario...</value>
+  </data>
+  <data name="remove" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="replace" xml:space="preserve">
+    <value>Sustituir</value>
+  </data>
+  <data name="replacement_rules" xml:space="preserve">
+    <value>Reglas de sustitución</value>
+  </data>
+  <data name="replacement_rules_management" xml:space="preserve">
+    <value>Gestión de reglas de sustitución</value>
+  </data>
+  <data name="replace_identical" xml:space="preserve">
+    <value>Sustituir idénticos</value>
+  </data>
+  <data name="replace_with" xml:space="preserve">
+    <value>Sustituir por</value>
+  </data>
+  <data name="route" xml:space="preserve">
+    <value>Ruta</value>
+  </data>
+  <data name="rule" xml:space="preserve">
+    <value>Regla</value>
+  </data>
+  <data name="rule_find" xml:space="preserve">
+    <value>Buscar...</value>
+  </data>
+  <data name="rule_replace" xml:space="preserve">
+    <value>Sustituir por...</value>
+  </data>
+  <data name="save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="saving_scenario" xml:space="preserve">
+    <value>Guardando archivos del escenario...</value>
+  </data>
+  <data name="scanning_ap_files" xml:space="preserve">
+    <value>Analizando archivos .ap...</value>
+  </data>
+  <data name="scanning_bin_files" xml:space="preserve">
+    <value>Buscando archivos .bin de vehículos...</value>
+  </data>
+  <data name="scenario" xml:space="preserve">
+    <value>Escenario</value>
+  </data>
+  <data name="scenario_delete_prompt_message" xml:space="preserve">
+    <value>¿Seguro que quieres eliminar los escenarios seleccionados?</value>
+  </data>
+  <data name="scenario_delete_prompt_title" xml:space="preserve">
+    <value>Eliminación de escenarios</value>
+  </data>
+  <data name="scenario_in_ap" xml:space="preserve">
+    <value>*** Este escenario está contenido en un archivo .ap. LocoSwap lo extraerá automáticamente al guardar. ***</value>
+  </data>
+  <data name="scenario_name_suffix" xml:space="preserve">
+    <value>Sufijo del nombre del escenario</value>
+  </data>
+  <data name="season" xml:space="preserve">
+    <value>Estación</value>
+  </data>
+  <data name="season_autumn" xml:space="preserve">
+    <value>Otoño</value>
+  </data>
+  <data name="season_spring" xml:space="preserve">
+    <value>Primavera</value>
+  </data>
+  <data name="season_summer" xml:space="preserve">
+    <value>Verano</value>
+  </data>
+  <data name="season_winter" xml:space="preserve">
+    <value>Invierno</value>
+  </data>
+  <data name="select_ts_path" xml:space="preserve">
+    <value>Seleccionar la ruta de Train Simulator</value>
+  </data>
+  <data name="select_vehicle_number" xml:space="preserve">
+    <value>Seleccionar número de vehículo</value>
+  </data>
+  <data name="settings" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="start_time" xml:space="preserve">
+    <value>Hora de inicio</value>
+  </data>
+  <data name="ts_directory" xml:space="preserve">
+    <value>Directorio de Train Simulator</value>
+  </data>
+  <data name="use_system_language" xml:space="preserve">
+    <value>Usar el idioma del sistema</value>
+  </data>
+  <data name="vehicles_in_selected_consist" xml:space="preserve">
+    <value>Vehículos en la composición seleccionada</value>
+  </data>
+  <data name="vehicle_selected" xml:space="preserve">
+    <value>Vehículo seleccionado</value>
+  </data>
+  <data name="vehicle_to_be_replaced" xml:space="preserve">
+    <value>Vehículo que se va a sustituir</value>
   </data>
 </root>

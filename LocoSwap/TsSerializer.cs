@@ -1,41 +1,79 @@
-﻿using Serilog;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Serilog;
 
 namespace LocoSwap
 {
     static class TsSerializer
     {
-        private static Process InvokeSerz(string path)
+        private static void RunSerz(string inputPath)
         {
-            var startInfo = new ProcessStartInfo();
-            startInfo.FileName = Utilities.GetSerzPath();
-            startInfo.Arguments = "\"" + path + "\"";
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Utilities.GetSerzPath(),
+                Arguments = "\"" + inputPath + "\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
 
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.EnableRaisingEvents = true;
+            if (!File.Exists(startInfo.FileName))
+            {
+                throw new FileNotFoundException(
+                    "serz.exe was not found. Check the Train Simulator path in settings.", startInfo.FileName);
+            }
+
+            using Process process = new Process { StartInfo = startInfo };
+
+            // Drain both streams asynchronously so a chatty serz can never deadlock us
+            var output = new StringBuilder();
+            var error = new StringBuilder();
+            process.OutputDataReceived += (_, e) => { if (e.Data != null) output.AppendLine(e.Data); };
+            process.ErrorDataReceived += (_, e) => { if (e.Data != null) error.AppendLine(e.Data); };
 
             process.Start();
-            return process;
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+
+            Log.Debug("serz {Input} exited with code {Code}. Output: {Output}",
+                Path.GetFileName(inputPath), process.ExitCode, output.ToString().Trim());
+
+            if (process.ExitCode != 0)
+            {
+                throw new InvalidOperationException(
+                    $"serz.exe failed (exit code {process.ExitCode}) processing '{Path.GetFileName(inputPath)}'. {error.ToString().Trim()}");
+            }
         }
         public static XDocument Load(string binPath)
         {
-            return XmlDocumentLoader.Load(BinToXml(binPath));
+            string xmlPath = BinToXml(binPath);
+            try
+            {
+                return XmlDocumentLoader.Load(xmlPath);
+            }
+            finally
+            {
+                // Remove the scratch .bin/.xml copies BinToXml made. Skipped when the source
+                // was already inside the temp dir (an .ap workdir the caller cleans up itself).
+                if (!binPath.StartsWith(Utilities.GetTempDir(), StringComparison.OrdinalIgnoreCase))
+                {
+                    Utilities.RemoveFile(xmlPath);
+                    Utilities.RemoveFile(Path.ChangeExtension(xmlPath, "bin"));
+                }
+            }
         }
 
         public static string BinToXml(string binPath)
         {
             FileInfo binInfo = new FileInfo(binPath);
             string baseName = Path.GetFileNameWithoutExtension(binInfo.Name);
-            string tempName = string.Format("{0}-{1}.bin", baseName, Utilities.StaticRandom.Instance.Next(10000, 99999));
+            string tempName = string.Format("{0}-{1}.bin", baseName, Guid.NewGuid().ToString("N"));
 
             string tempBinPath;
             string tempXmlPath;
@@ -55,8 +93,12 @@ namespace LocoSwap
                 tempXmlPath = Path.ChangeExtension(tempBinPath, "xml");
             }
 
-            Process serz = InvokeSerz(tempBinPath);
-            serz.WaitForExit();
+            RunSerz(tempBinPath);
+
+            if (!File.Exists(tempXmlPath))
+            {
+                throw new FileNotFoundException("serz.exe did not produce the expected XML output.", tempXmlPath);
+            }
 
             return tempXmlPath;
         }
@@ -67,27 +109,27 @@ namespace LocoSwap
             Utilities.RemoveFile(xmlPath);
             Utilities.RemoveFile(path);
 
-            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
-            xmlWriterSettings.Indent = true;
-            xmlWriterSettings.IndentChars = "\t";
-            xmlWriterSettings.Encoding = new UTF8Encoding(false);
-            xmlWriterSettings.NewLineHandling = NewLineHandling.None;
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "\t",
+                Encoding = new UTF8Encoding(false),
+                NewLineHandling = NewLineHandling.None,
+            };
 
-            FileStream stream = new FileStream(xmlPath, FileMode.Create);
+            using (FileStream stream = new FileStream(xmlPath, FileMode.Create))
             using (XmlWriter writer = XmlWriter.Create(stream, xmlWriterSettings))
             {
                 document.Save(writer);
             }
-            stream.Flush();
-            stream.Close();
 
-            Process serz = InvokeSerz(xmlPath);
-            serz.WaitForExit();
+            RunSerz(xmlPath);
 
-            string serzOutput = serz.StandardOutput.ReadToEnd();
-            Log.Debug(string.Format("Serz output: {0}", serzOutput));
-
-            return;
+            if (!File.Exists(path) || new FileInfo(path).Length == 0)
+            {
+                throw new InvalidOperationException(
+                    "serz.exe did not produce a valid .bin file - the scenario was not saved.");
+            }
         }
     }
 }

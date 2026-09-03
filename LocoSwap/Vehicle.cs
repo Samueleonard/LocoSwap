@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace LocoSwap
@@ -144,7 +144,7 @@ namespace LocoSwap
             DisplayName = name;
             Exists = VehicleExistance.Found;
             Type = VehicleType.Unknown;
-            Length = (float) Math.Round(length, 2);
+            Length = (float)Math.Round(length, 2);
         }
     }
 }

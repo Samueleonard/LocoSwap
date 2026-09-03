@@ -1,11 +1,10 @@
-﻿using Ionic.Zip;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -13,11 +12,11 @@ namespace LocoSwap
     {
         private static XNamespace Namespace = "http://www.kuju.com/TnT/2003/Delta";
 
-        private List<Tuple<string, string>> _cargoComponents;
+        private List<(string Capacity, string AltEncoding)> _cargoComponents;
         private int _entityCount;
         private List<string> _numberingList;
         private XElement _nameLocalisedString;
-        public List<Tuple<string, string>> CargoComponents
+        public List<(string Capacity, string AltEncoding)> CargoComponents
         {
             get => _cargoComponents;
             set => SetProperty(ref _cargoComponents, value);
@@ -59,21 +58,23 @@ namespace LocoSwap
             string actualBinPath = Path.Combine(Properties.Settings.Default.TsPath, "Assets", binPath);
             if (selfAvalibility.InApFile)
             {
-                var zipFile = ZipFile.Read(selfAvalibility.ApPath);
-                var binEntry = zipFile.Where(entry => entry.FileName == selfAvalibility.PathWithinAp).FirstOrDefault();
-                if (binEntry == null)
+                using (var zipFile = ZipHelper.OpenRead(selfAvalibility.ApPath))
                 {
-                    throw new Exception("Unable to load vehicle: bin file not found within .ap file");
-                }
-                var baseName = Path.GetFileNameWithoutExtension(selfAvalibility.PathWithinAp);
-                var tempName = string.Format("{0}-{1}.bin", baseName, Utilities.StaticRandom.Instance.Next(10000, 99999));
-                actualBinPath = Path.Combine(Utilities.GetTempDir(), tempName);
-                Utilities.RemoveFile(actualBinPath);
-                using (var fileStream = new FileStream(actualBinPath, FileMode.Create))
-                {
-                    binEntry.Extract(fileStream);
-                    fileStream.Flush();
-                    fileStream.Close();
+                    var binEntry = zipFile.Entries.FirstOrDefault(entry => entry.FullName == selfAvalibility.PathWithinAp);
+                    if (binEntry == null)
+                    {
+                        throw new Exception("Unable to load vehicle: bin file not found within .ap file");
+                    }
+                    var baseName = Path.GetFileNameWithoutExtension(selfAvalibility.PathWithinAp);
+                    var tempName = string.Format("{0}-{1}.bin", baseName, System.Random.Shared.Next(10000, 99999));
+                    actualBinPath = Path.Combine(Utilities.GetTempDir(), tempName);
+                    Utilities.RemoveFile(actualBinPath);
+                    using (var fileStream = new FileStream(actualBinPath, FileMode.Create))
+                    {
+                        binEntry.ExtractToStream(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                    }
                 }
                 Log.Debug("Extract to {0}", actualBinPath);
             }
@@ -149,7 +150,7 @@ namespace LocoSwap
                 catch (Exception e)
                 {
                     Log.Debug("Exception caught loading main vehicle: {0}", e.Message);
-                    throw e;
+                    throw;
                 }
 
                 Log.Debug("After loading main vehicle: Type={0}, EntityCount={1}, CargoCount={2}", Type, EntityCount, CargoCount);
@@ -159,21 +160,21 @@ namespace LocoSwap
 
             EntityCount = document.Root.Descendants("cEntityContainerBlueprint-sChild").Count();
 
-            CargoComponents = new List<Tuple<string, string>>();
+            CargoComponents = new List<(string Capacity, string AltEncoding)>();
             XElement cargoDef = document.Root.Descendants("CargoDef").FirstOrDefault();
             if (cargoDef != null)
             {
                 foreach (var cBulkCargoDef in cargoDef.Elements())
                 {
                     var capacity = cBulkCargoDef.Element("Capacity");
-                    var tuple = new Tuple<string, string>("0", "0000000000000000");
+                    (string Capacity, string AltEncoding) component = ("0", "0000000000000000");
                     if (capacity != null)
                     {
-                        tuple = new Tuple<string, string>(
+                        component = (
                             capacity.Value,
                             capacity.Attribute(Namespace + "alt_encoding").Value);
                     }
-                    CargoComponents.Add(tuple);
+                    CargoComponents.Add(component);
                 }
             }
 

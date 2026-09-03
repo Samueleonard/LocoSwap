@@ -1,7 +1,7 @@
-﻿using LocoSwap.Properties;
-using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows;
+using LocoSwap.Properties;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -46,6 +46,16 @@ namespace LocoSwap
             {
                 Name = "Italiano",
                 Value = "it"
+            });
+            LanguageList.Add(new LanguageListItem
+            {
+                Name = "Español",
+                Value = "es"
+            });
+            LanguageList.Add(new LanguageListItem
+            {
+                Name = "Polski",
+                Value = "pl"
             });
             LanguageList.Add(new LanguageListItem
             {

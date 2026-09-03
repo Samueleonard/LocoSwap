@@ -118,61 +118,61 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="add_to_rules" xml:space="preserve">
-    <value>Créer règle</value>
+    <value>Dodaj do reguł</value>
   </data>
   <data name="all_vehicles" xml:space="preserve">
-    <value>Lister tous les véhicules</value>
+    <value>Lista wszystkich pojazdów</value>
   </data>
   <data name="and_add_as_rule" xml:space="preserve">
-    <value>et créer règle</value>
+    <value>i dodaj jako regułę</value>
   </data>
   <data name="apply" xml:space="preserve">
-    <value>Appliquer</value>
+    <value>Zastosuj</value>
   </data>
   <data name="apply_all_rules" xml:space="preserve">
-    <value>Appliquer toutes les règles</value>
+    <value>Zastosuj wszystkie reguły</value>
   </data>
   <data name="archive_rest" xml:space="preserve">
-    <value>Archiver toutes routes sauf sélectionnées</value>
+    <value>Archiwizuj wszystkie trasy oprócz zaznaczonej</value>
   </data>
   <data name="archive_toggle" xml:space="preserve">
-    <value>Archiver/Désarchiver</value>
+    <value>Archiwizuj/Przywróć</value>
   </data>
   <data name="archive_without_db_loaded_prompt_message" xml:space="preserve">
-    <value>Etes-vous sûr de vouloir archiver maintenant ? La base des scénarios est en train d'être scannée et vous pourriez perdre certains statuts de complétion. Le mieux est de cliquer sur "non" et de réessayer dans quelques instants.</value>
+    <value>Czy na pewno chcesz archiwizować trasy, gdy baza danych scenariuszy jest wciąż skanowana? Istnieje ryzyko utraty niektórych statusów ukończenia scenariuszy. Lepiej kliknij „Nie” i odczekaj kilka sekund przed ponowną próbą archiwizacji.</value>
   </data>
   <data name="archive_without_db_loaded_prompt_title" xml:space="preserve">
-    <value>Voulez-vous vraiment archiver maintenant ?</value>
+    <value>Czy na pewno chcesz teraz archiwizować?</value>
   </data>
   <data name="author" xml:space="preserve">
-    <value>Auteur</value>
+    <value>Autor</value>
   </data>
   <data name="browse" xml:space="preserve">
-    <value>Parcourir...</value>
+    <value>Przeglądaj ...</value>
   </data>
   <data name="cancel" xml:space="preserve">
-    <value>Annuler</value>
+    <value>Anuluj</value>
   </data>
   <data name="change_number" xml:space="preserve">
-    <value>Changer numérotation</value>
+    <value>Zmień numer</value>
   </data>
   <data name="check_all_scenario_consists" xml:space="preserve">
-    <value>Contrôler toutes les rames de tous les scénarios à la sélection d'une route (lent !)</value>
+    <value>Sprawdzaj składy wszystkich scenariuszy przy wyborze trasy (to będzie wolne!)</value>
   </data>
   <data name="clear_vehicles" xml:space="preserve">
-    <value>Vider</value>
+    <value>Wyczyść</value>
   </data>
   <data name="close" xml:space="preserve">
-    <value>Fermer</value>
+    <value>Zamknij</value>
   </data>
   <data name="completion" xml:space="preserve">
-    <value>Terminé</value>
+    <value>Ukończenie</value>
   </data>
   <data name="completion_completedfailed" xml:space="preserve">
-    <value>Échoué</value>
+    <value>Niepowodzenie</value>
   </data>
   <data name="completion_completedsuccessfully" xml:space="preserve">
-    <value>Réussi</value>
+    <value>Sukces</value>
   </data>
   <data name="completion_notcompleted" xml:space="preserve">
     <value />
@@ -180,253 +180,253 @@
   <data name="completion_notindb" xml:space="preserve">
     <value />
   </data>
+  <data name="completion_unknown" xml:space="preserve">
+    <value>?</value>
+  </data>
   <data name="consists_in_scenario" xml:space="preserve">
-    <value>Rames du scénario</value>
+    <value>Składy w scenariuszu</value>
   </data>
   <data name="delete" xml:space="preserve">
-    <value>Supprimer</value>
+    <value>Usuń</value>
   </data>
   <data name="delete_scenarios" xml:space="preserve">
-    <value>Supprimer scénarios</value>
+    <value>Usuń scenariusze</value>
   </data>
   <data name="do_not_auto_archive_workshop_routes" xml:space="preserve">
-    <value>AutoArchive ne doit pas archiver les scénarios du workshop</value>
+    <value>AutoArchiwizacja nie powinna archiwizować tras z Warsztatu</value>
   </data>
   <data name="duration" xml:space="preserve">
-    <value>Durée</value>
+    <value>Czas trwania</value>
   </data>
   <data name="edit_scenario" xml:space="preserve">
-    <value>Éditer le scenario</value>
+    <value>Edytuj scenariusz</value>
   </data>
   <data name="edit_scenario_title" xml:space="preserve">
-    <value>Éditer le scenario {0}</value>
+    <value>Edytuj scenariusz: {0}</value>
   </data>
   <data name="enter_number_manually" xml:space="preserve">
-    <value>Ou saisissez le numéro :</value>
+    <value>Lub wpisz numer pojazdu ręcznie:</value>
   </data>
   <data name="error_cannot_read_scenario" xml:space="preserve">
-    <value>Erreur : impossible de lire les détails du scénario (XML malformé)</value>
+    <value>Błąd: nie można odczytać szczegółów scenariusza (nieprawidłowy XML)</value>
   </data>
   <data name="filter" xml:space="preserve">
-    <value>Filtrer</value>
+    <value>Filtruj</value>
   </data>
   <data name="flip" xml:space="preserve">
-    <value>Inverser véhicule</value>
+    <value>Obróć pojazd</value>
   </data>
   <data name="flipped" xml:space="preserve">
-    <value>Inversé ?</value>
+    <value>Obrócony?</value>
   </data>
   <data name="game_save_date" xml:space="preserve">
-    <value>Date sauvegarde</value>
+    <value>Data zapisu</value>
   </data>
   <data name="hide_played_scenarios" xml:space="preserve">
-    <value>Cacher scénarios joués</value>
+    <value>Ukryj rozegrane scenariusze</value>
   </data>
   <data name="id" xml:space="preserve">
     <value>ID</value>
   </data>
   <data name="insert_after" xml:space="preserve">
-    <value>Insérer v</value>
+    <value>Wstaw v</value>
   </data>
   <data name="insert_before" xml:space="preserve">
-    <value>Insérer ^</value>
+    <value>Wstaw ^</value>
   </data>
   <data name="involved_in_consist_operation" xml:space="preserve">
-    <value>Ce véhicule apparaît dans des instructions de couplage/découplage. LocoSwap conservera son numéro.</value>
+    <value>Ten pojazd jest objęty instrukcjami sprzęgania/rozprzęgania. LocoSwap zachowa jego numer.</value>
   </data>
   <data name="language" xml:space="preserve">
-    <value>Langue</value>
+    <value>Język</value>
   </data>
   <data name="loading" xml:space="preserve">
-    <value>Chargement...</value>
+    <value>Ładowanie...</value>
   </data>
   <data name="look_up_vehicles" xml:space="preserve">
-    <value>Scanner véhicules</value>
+    <value>Wyszukaj pojazdy</value>
   </data>
   <data name="msg_cannot_load_vehicle" xml:space="preserve">
-    <value>Impossible de charger le véhicule "{0}"!</value>
+    <value>Nie można wczytać pojazdu „{0}”!</value>
   </data>
   <data name="msg_consist_empty" xml:space="preserve">
-    <value>Il doit rester au moins un véhicule dans la rame</value>
+    <value>Skład musi zawierać co najmniej jeden pojazd po usunięciu!</value>
   </data>
   <data name="msg_error" xml:space="preserve">
-    <value>Erreur</value>
+    <value>Błąd</value>
   </data>
   <data name="msg_first_time" xml:space="preserve">
-    <value>Premier lancement : sélectionnez le chemin de votre Train Simulator</value>
+    <value>Pierwsze uruchomienie: wybierz katalog Train Simulator.</value>
   </data>
   <data name="msg_flip_completed" xml:space="preserve">
-    <value>Les véhicules sélectionnés ont été inversés</value>
+    <value>Wybrane pojazdy zostały pomyślnie obrócone.</value>
   </data>
   <data name="msg_message" xml:space="preserve">
-    <value>Message</value>
+    <value>Komunikat</value>
   </data>
   <data name="msg_no_directory_selected" xml:space="preserve">
-    <value>Merci de sélectionner un dossier.</value>
+    <value>Najpierw wybierz katalog.</value>
   </data>
   <data name="msg_no_vehicle_selected" xml:space="preserve">
-    <value>Merci de sélectionner un véhicule.</value>
+    <value>Najpierw wybierz pojazdy.</value>
   </data>
   <data name="msg_scenario_saved" xml:space="preserve">
-    <value>Le scénario a bien été sauvegardé.</value>
+    <value>Pliki scenariusza zostały pomyślnie zapisane.</value>
+  </data>
+  <data name="msg_swap_completed" xml:space="preserve">
+    <value>Zamiana zakończona pomyślnie.</value>
   </data>
   <data name="msg_ts_path_invalid" xml:space="preserve">
-    <value>Le chemin sélectionné est invalide ! (Vérifiez qu'il contient RailWorks.exe)</value>
+    <value>Wybrana ścieżka jest nieprawidłowa! (Sprawdź, czy zawiera RailWorks.exe)</value>
   </data>
   <data name="msg_ts_path_required" xml:space="preserve">
-    <value>Un chemin valide vers TS est nécessaire à cette application. L'application va se terminer.</value>
+    <value>Do uruchomienia tej aplikacji wymagana jest prawidłowa ścieżka TS. Aplikacja zostanie teraz zamknięta.</value>
   </data>
   <data name="msg_vehicles_added_to_rules" xml:space="preserve">
-    <value>Les règles ont bien été créées pour ces véhicules.</value>
+    <value>Pojazdy zostały pomyślnie dodane do reguł zamiany.</value>
   </data>
   <data name="msg_vehicle_already_in_rules" xml:space="preserve">
-    <value>Le véhicule "{0}" a déjà une règle de remplacement. Écraser cette règle ?</value>
+    <value>Pojazd „{0}” jest już w regułach zamiany! Zaktualizować tę regułę?</value>
   </data>
   <data name="msg_write_access_denied" xml:space="preserve">
-    <value>Accès en écriture refusé. Vérifiez que Scenario.bin et ScenarioProperties.xml ne sont pas protégés en écriture.</value>
+    <value>Odmowa dostępu podczas próby zapisu plików scenariusza. Sprawdź, czy Scenario.bin i ScenarioProperties.xml nie są chronione przed zapisem.</value>
   </data>
   <data name="name" xml:space="preserve">
-    <value>Nom</value>
+    <value>Nazwa</value>
   </data>
   <data name="new_vehicle_selected" xml:space="preserve">
-    <value>Nouveau véhicule sélectionné</value>
+    <value>Wybrano nowy pojazd</value>
   </data>
   <data name="number" xml:space="preserve">
-    <value>Numéro</value>
+    <value>Numer</value>
   </data>
   <data name="numbering_list" xml:space="preserve">
-    <value>Liste de numérotation</value>
+    <value>Lista numeracji</value>
   </data>
   <data name="numbering_list_not_found" xml:space="preserve">
-    <value>Pas de liste de numérotation trouvée. Saisissez le numéro manuellement.</value>
+    <value>Nie znaleziono listy numeracji; wpisz numer ręcznie.</value>
   </data>
   <data name="ok" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="only_on_missing_stock" xml:space="preserve">
-    <value>uniquement aux véhicules manquants (en jaune)</value>
+    <value>tylko na brakującym taborze (żółte)</value>
   </data>
   <data name="on_all_stock" xml:space="preserve">
-    <value>à tous les véhicules</value>
+    <value>na całym taborze</value>
   </data>
   <data name="open_manual" xml:space="preserve">
-    <value>Ouvrir le manuel</value>
+    <value>Otwórz instrukcję</value>
   </data>
   <data name="open_scenario_directory" xml:space="preserve">
-    <value>Ouvrir le dossier du scénario</value>
+    <value>Otwórz katalog scenariusza</value>
   </data>
   <data name="path" xml:space="preserve">
-    <value>Chemin</value>
+    <value>Ścieżka</value>
   </data>
   <data name="player_train_name" xml:space="preserve">
-    <value>Train du joueur</value>
+    <value>Pociąg gracza</value>
   </data>
   <data name="reading_scenario_files" xml:space="preserve">
-    <value>Chargement du scénario...</value>
+    <value>Odczytywanie plików scenariusza...</value>
   </data>
   <data name="remove" xml:space="preserve">
-    <value>Supprimer</value>
+    <value>Usuń</value>
   </data>
   <data name="replace" xml:space="preserve">
-    <value>Remplacer</value>
+    <value>Zamień</value>
   </data>
   <data name="replacement_rules" xml:space="preserve">
-    <value>Règles de remplacement</value>
+    <value>Reguły zamiany</value>
   </data>
   <data name="replacement_rules_management" xml:space="preserve">
-    <value>Gestion des règles de remplacement</value>
+    <value>Zarządzanie regułami zamiany</value>
   </data>
   <data name="replace_identical" xml:space="preserve">
-    <value>Remplacer les identiques</value>
+    <value>Zamień identyczne</value>
   </data>
   <data name="replace_with" xml:space="preserve">
-    <value>Remplacer par</value>
+    <value>Zamień na</value>
   </data>
   <data name="route" xml:space="preserve">
-    <value>Ligne</value>
+    <value>Trasa</value>
   </data>
   <data name="rule" xml:space="preserve">
-    <value>Règle</value>
+    <value>Reguła</value>
   </data>
   <data name="rule_find" xml:space="preserve">
-    <value>Chercher...</value>
+    <value>Szukaj...</value>
   </data>
   <data name="rule_replace" xml:space="preserve">
-    <value>Remplacer par...</value>
+    <value>Zamień na...</value>
   </data>
   <data name="save" xml:space="preserve">
-    <value>Sauvegarder</value>
+    <value>Zapisz</value>
   </data>
   <data name="saving_scenario" xml:space="preserve">
-    <value>Enregistrement du scénario...</value>
+    <value>Zapisywanie plików scenariusza...</value>
   </data>
   <data name="scanning_ap_files" xml:space="preserve">
-    <value>Scan des fichiers .ap...</value>
+    <value>Skanowanie plików .ap...</value>
   </data>
   <data name="scanning_bin_files" xml:space="preserve">
-    <value>Scan des fichiers .bin...</value>
+    <value>Wyszukiwanie plików .bin pojazdów...</value>
   </data>
   <data name="scenario" xml:space="preserve">
-    <value>Scénario</value>
+    <value>Scenariusz</value>
   </data>
   <data name="scenario_delete_prompt_message" xml:space="preserve">
-    <value>Etes-vous sûr de vouloir supprimer le(s) scénario(s) sélectionné(s) ?</value>
+    <value>Czy na pewno chcesz usunąć wybrane scenariusze?</value>
   </data>
   <data name="scenario_delete_prompt_title" xml:space="preserve">
-    <value>Suppression de scénario(s)</value>
+    <value>Usuwanie scenariuszy</value>
   </data>
   <data name="scenario_in_ap" xml:space="preserve">
-    <value>*** Ce scénario est dans un fichier .ap. LocoSwap l'extraira automatiquement au moment de la sauvegarde. ***</value>
+    <value>*** Ten scenariusz znajduje się w pliku .ap. LocoSwap automatycznie wypakuje go przy zapisie. ***</value>
   </data>
   <data name="scenario_name_suffix" xml:space="preserve">
-    <value>Suffixe au nom du scénario</value>
+    <value>Sufiks nazwy scenariusza</value>
   </data>
   <data name="season" xml:space="preserve">
-    <value>Saison</value>
+    <value>Pora roku</value>
   </data>
   <data name="season_autumn" xml:space="preserve">
-    <value>Automne</value>
+    <value>Jesień</value>
   </data>
   <data name="season_spring" xml:space="preserve">
-    <value>Printemps</value>
+    <value>Wiosna</value>
   </data>
   <data name="season_summer" xml:space="preserve">
-    <value>Été</value>
+    <value>Lato</value>
   </data>
   <data name="season_winter" xml:space="preserve">
-    <value>Hiver</value>
+    <value>Zima</value>
   </data>
   <data name="select_ts_path" xml:space="preserve">
-    <value>Sélectionnez le chemin de Train Simulator</value>
+    <value>Wybierz ścieżkę Train Simulator</value>
   </data>
   <data name="select_vehicle_number" xml:space="preserve">
-    <value>Sélection du numéro de véhicule</value>
+    <value>Wybierz numer pojazdu</value>
   </data>
   <data name="settings" xml:space="preserve">
-    <value>Options</value>
+    <value>Ustawienia</value>
   </data>
   <data name="start_time" xml:space="preserve">
-    <value>Heure</value>
+    <value>Godzina rozpoczęcia</value>
   </data>
   <data name="ts_directory" xml:space="preserve">
-    <value>Dossier Train Simulator</value>
+    <value>Katalog Train Simulator</value>
   </data>
   <data name="use_system_language" xml:space="preserve">
-    <value>Utiliser la langue système</value>
+    <value>Użyj języka systemu</value>
   </data>
   <data name="vehicles_in_selected_consist" xml:space="preserve">
-    <value>Véhicules de la rame</value>
+    <value>Pojazdy w wybranym składzie</value>
   </data>
   <data name="vehicle_selected" xml:space="preserve">
-    <value>Véhicule sélectionné</value>
+    <value>Wybrany pojazd</value>
   </data>
   <data name="vehicle_to_be_replaced" xml:space="preserve">
-    <value>Véhicule à remplacer</value>
-  </data>
-  <data name="completion_unknown" xml:space="preserve">
-    <value>?</value>
-  </data>
-  <data name="msg_swap_completed" xml:space="preserve">
-    <value>Échange terminé avec succès.</value>
+    <value>Pojazd do zamiany</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace LocoSwap
 {
@@ -80,8 +80,8 @@ namespace LocoSwap
             }
             if (countNotReplacedVehicles == 0)
             {
-            IsComplete = ConsistVehicleExistance.FullyReplaced;
+                IsComplete = ConsistVehicleExistance.FullyReplaced;
+            }
         }
     }
-}
 }

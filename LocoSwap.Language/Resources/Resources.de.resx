@@ -124,7 +124,7 @@
     <value>Alle Fahrzeuge listen</value>
   </data>
   <data name="apply" xml:space="preserve">
-    <value>Apply</value>
+    <value>Anwenden</value>
   </data>
   <data name="archive_rest" xml:space="preserve">
     <value>Alle Strecken außer den ausgewählten archivieren</value>
@@ -160,7 +160,7 @@
     <value>Züge</value>
   </data>
   <data name="delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Löschen</value>
   </data>
   <data name="do_not_auto_archive_workshop_routes" xml:space="preserve">
     <value>AutoArchive sollte keine workshop Strecke archivieren</value>
@@ -329,5 +329,104 @@
   </data>
   <data name="vehicle_to_be_replaced" xml:space="preserve">
     <value>Dieses Fahrzeug wird getauscht (linke Seite):</value>
+  </data>
+  <data name="and_add_as_rule" xml:space="preserve">
+    <value>und als Regel hinzufügen</value>
+  </data>
+  <data name="apply_all_rules" xml:space="preserve">
+    <value>Alle Regeln anwenden</value>
+  </data>
+  <data name="author" xml:space="preserve">
+    <value>Autor</value>
+  </data>
+  <data name="completion" xml:space="preserve">
+    <value>Abschluss</value>
+  </data>
+  <data name="completion_completedfailed" xml:space="preserve">
+    <value>Fehlgeschlagen</value>
+  </data>
+  <data name="completion_completedsuccessfully" xml:space="preserve">
+    <value>Erfolgreich</value>
+  </data>
+  <data name="completion_unknown" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="delete_scenarios" xml:space="preserve">
+    <value>Szenarien löschen</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="error_cannot_read_scenario" xml:space="preserve">
+    <value>Fehler: Szenariodetails können nicht gelesen werden (fehlerhaftes XML)</value>
+  </data>
+  <data name="filter" xml:space="preserve">
+    <value>Filtern</value>
+  </data>
+  <data name="game_save_date" xml:space="preserve">
+    <value>Speicherdatum</value>
+  </data>
+  <data name="hide_played_scenarios" xml:space="preserve">
+    <value>Gespielte Szenarien ausblenden</value>
+  </data>
+  <data name="involved_in_consist_operation" xml:space="preserve">
+    <value>Dieses Fahrzeug ist an Kupplungs-/Entkupplungsanweisungen beteiligt. LocoSwap behält seine Nummer bei.</value>
+  </data>
+  <data name="loading" xml:space="preserve">
+    <value>Wird geladen...</value>
+  </data>
+  <data name="only_on_missing_stock" xml:space="preserve">
+    <value>nur bei fehlenden Fahrzeugen (gelb)</value>
+  </data>
+  <data name="on_all_stock" xml:space="preserve">
+    <value>auf alle Fahrzeuge</value>
+  </data>
+  <data name="open_manual" xml:space="preserve">
+    <value>Handbuch öffnen</value>
+  </data>
+  <data name="player_train_name" xml:space="preserve">
+    <value>Spielerzug</value>
+  </data>
+  <data name="replacement_rules_management" xml:space="preserve">
+    <value>Verwaltung der Ersetzungsregeln</value>
+  </data>
+  <data name="rule" xml:space="preserve">
+    <value>Regel</value>
+  </data>
+  <data name="scenario_delete_prompt_message" xml:space="preserve">
+    <value>Möchten Sie die ausgewählten Szenarien wirklich löschen?</value>
+  </data>
+  <data name="scenario_delete_prompt_title" xml:space="preserve">
+    <value>Szenarien löschen</value>
+  </data>
+  <data name="scenario_in_ap" xml:space="preserve">
+    <value>*** Dieses Szenario befindet sich in einer .ap-Datei. LocoSwap entpackt es beim Speichern automatisch. ***</value>
+  </data>
+  <data name="scenario_name_suffix" xml:space="preserve">
+    <value>Suffix für Szenarionamen</value>
+  </data>
+  <data name="season" xml:space="preserve">
+    <value>Jahreszeit</value>
+  </data>
+  <data name="season_autumn" xml:space="preserve">
+    <value>Herbst</value>
+  </data>
+  <data name="season_spring" xml:space="preserve">
+    <value>Frühling</value>
+  </data>
+  <data name="season_summer" xml:space="preserve">
+    <value>Sommer</value>
+  </data>
+  <data name="season_winter" xml:space="preserve">
+    <value>Winter</value>
+  </data>
+  <data name="start_time" xml:space="preserve">
+    <value>Startzeit</value>
+  </data>
+  <data name="completion_notcompleted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="completion_notindb" xml:space="preserve">
+    <value />
   </data>
 </root>

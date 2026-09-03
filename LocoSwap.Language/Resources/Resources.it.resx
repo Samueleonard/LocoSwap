@@ -151,7 +151,7 @@
     <value>Navigare ...</value>
   </data>
   <data name="cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Annulla</value>
   </data>
   <data name="change_number" xml:space="preserve">
     <value>Cambia numero</value>
@@ -419,5 +419,14 @@
   </data>
   <data name="vehicle_to_be_replaced" xml:space="preserve">
     <value>Rotabile è stato sostituito</value>
+  </data>
+  <data name="error_cannot_read_scenario" xml:space="preserve">
+    <value>Errore: impossibile leggere i dettagli dello scenario (XML non valido)</value>
+  </data>
+  <data name="open_manual" xml:space="preserve">
+    <value>Apri manuale</value>
+  </data>
+  <data name="scenario_in_ap" xml:space="preserve">
+    <value>*** Questo scenario è contenuto in un file .ap. LocoSwap lo estrarrà automaticamente al salvataggio. ***</value>
   </data>
 </root>

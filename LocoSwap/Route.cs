@@ -1,13 +1,14 @@
-﻿using Ionic.Zip;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -41,13 +42,15 @@ namespace LocoSwap
         }
         private bool _isArchived = false;
         public bool IsWorkshop { set; get; } = false;
-        public bool IsArchived { get => _isArchived; set
+        public bool IsArchived
+        {
+            get => _isArchived; set
             {
                 _isArchived = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("IsArchived"));
             }
         }
-        
+
 
         public Dictionary<string, ScenarioDb.ScenarioCompletion> LocalScenarioDb { get; } = new Dictionary<string, ScenarioDb.ScenarioCompletion>();
 
@@ -74,7 +77,7 @@ namespace LocoSwap
             {
                 xmlToLoad = xmlPath;
             }
-            else if(File.Exists(xmlArchivedPath))
+            else if (File.Exists(xmlArchivedPath))
             {
                 xmlToLoad = xmlArchivedPath;
                 IsArchived = true;
@@ -93,28 +96,18 @@ namespace LocoSwap
                 {
                     try
                     {
-                        ZipFile zipFile = ZipFile.Read(apPath);
-                        try
+                        using (var zipFile = ZipHelper.OpenRead(apPath))
                         {
-
-                            ZipEntry apEntry = zipFile.Where(entry => entry.FileName == "RouteProperties.xml").FirstOrDefault();
+                            var apEntry = zipFile.Entries.FirstOrDefault(entry => entry.FullName == "RouteProperties.xml");
                             if (apEntry == null) continue;
-                            apEntry.Extract(Utilities.GetTempDir());
+                            apEntry.ExtractEntry(Utilities.GetTempDir());
                             apFileContainingRouteProperties = apPath;
 
                             IsArchived = apPath.EndsWith(".LSoff");
                             break;
                         }
-                        catch (Exception e)
-                        {
-                            Log.Error("Error while reading " + apPath + ", " + e.Message);
-                        }
-                        finally
-                        {
-                            zipFile.Dispose();
-                        }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Log.Error("Could not unzip " + apPath + ", " + e.Message);
                     }
@@ -134,31 +127,37 @@ namespace LocoSwap
 
             IsFavorite = Properties.Settings.Default.FavoriteRoutes?.IndexOf(Id) >= 0;
 
-            // Read local scenario completion DB
-            if (File.Exists(Path.Combine(RouteDirectory, "LocoSwap_ScenarioDb.xml")))
+            // Read local scenario completion DB (JSON, with one-time fallback to the legacy XML format)
+            try
             {
-                FileStream fs = File.Open(Path.Combine(RouteDirectory, "LocoSwap_ScenarioDb.xml"), FileMode.Open);
-
-                try
+                List<SerializableScenarioDb> localDb = null;
+                if (File.Exists(LocalScenarioDbPath))
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<SerializableScenarioDb>));
-                    List<SerializableScenarioDb> listOfScenarioCompletionsFromLocalDb = (List<SerializableScenarioDb>)serializer.Deserialize(fs);
+                    localDb = JsonSerializer.Deserialize(File.ReadAllText(LocalScenarioDbPath),
+                        ScenarioDbJsonContext.Default.ListSerializableScenarioDb);
+                }
+                else if (File.Exists(LegacyLocalScenarioDbPath))
+                {
+                    using FileStream fs = File.OpenRead(LegacyLocalScenarioDbPath);
+                    localDb = (List<SerializableScenarioDb>)new XmlSerializer(typeof(List<SerializableScenarioDb>)).Deserialize(fs);
+                }
 
-                    foreach (SerializableScenarioDb scenarioCompletionFromLocalDb in listOfScenarioCompletionsFromLocalDb)
+                if (localDb != null)
+                {
+                    foreach (SerializableScenarioDb entry in localDb)
                     {
-                        LocalScenarioDb[scenarioCompletionFromLocalDb.Key] = ScenarioDb.parseCompletion(scenarioCompletionFromLocalDb.Value);
+                        LocalScenarioDb[entry.Key] = ScenarioDb.parseCompletion(entry.Value);
                     }
                 }
-                catch (Exception e)
-                {
-                    Log.Error("Couldn't read local scenario database, " + e.Message);
-                }
-                finally
-                {
-                    fs.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Couldn't read local scenario database, " + e.Message);
             }
         }
+
+        private string LocalScenarioDbPath => Path.Combine(RouteDirectory, "LocoSwap_ScenarioDb.json");
+        private string LegacyLocalScenarioDbPath => Path.Combine(RouteDirectory, "LocoSwap_ScenarioDb.xml");
 
         public static string GetRoutesDirectory()
         {
@@ -181,7 +180,7 @@ namespace LocoSwap
                 {
                     ret.Add(new Route(id));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Log.Error("Route in directory {0} is not a valid route: {1}", id, e.Message);
                 }
@@ -226,11 +225,14 @@ namespace LocoSwap
 
                 if (entries.Count != 0)
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<SerializableScenarioDb>));
+                    File.WriteAllText(LocalScenarioDbPath, JsonSerializer.Serialize(entries,
+                        ScenarioDbJsonContext.Default.ListSerializableScenarioDb));
 
-                    FileStream fs = File.Open(Path.Combine(RouteDirectory, "LocoSwap_ScenarioDb.xml"), FileMode.Create);
-                    serializer.Serialize(fs, entries);
-                    fs.Close();
+                    // The JSON file now supersedes any legacy XML copy
+                    if (File.Exists(LegacyLocalScenarioDbPath))
+                    {
+                        try { File.Delete(LegacyLocalScenarioDbPath); } catch { /* best effort */ }
+                    }
                 }
 
                 // Do the actual route archiving (renaming)
@@ -247,11 +249,13 @@ namespace LocoSwap
                 string[] apFiles = Directory.GetFiles(RouteDirectory, "*.ap", SearchOption.TopDirectoryOnly);
                 foreach (string apPath in apFiles)
                 {
-                    ZipFile zipFile = ZipFile.Read(apPath);
-                    ZipEntry apEntry = zipFile.Where(entry => entry.FileName == "RouteProperties.xml").FirstOrDefault();
-                    zipFile.Dispose();
+                    bool apEntryExists;
+                    using (var zipFile = ZipHelper.OpenRead(apPath))
+                    {
+                        apEntryExists = zipFile.Entries.Any(entry => entry.FullName == "RouteProperties.xml");
+                    }
 
-                    if (apEntry != null)
+                    if (apEntryExists)
                     {
                         if (File.Exists(apPath + ".LSoff"))
                         {
@@ -268,8 +272,9 @@ namespace LocoSwap
 
     public class SerializableScenarioDb
     {
-        public string Key;
-        public string Value;
+        public string Key { get; set; }
+        public string Value { get; set; }
+
         public SerializableScenarioDb()
         {
         }
@@ -279,5 +284,11 @@ namespace LocoSwap
             Key = key;
             Value = value.ToString();
         }
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(List<SerializableScenarioDb>))]
+    internal partial class ScenarioDbJsonContext : JsonSerializerContext
+    {
     }
 }

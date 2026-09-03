@@ -1,6 +1,3 @@
-﻿using Ionic.Zip;
-using LocoSwap.Properties;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using LocoSwap.Properties;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -324,12 +323,17 @@ namespace LocoSwap
                 foreach (var item in apFiles.Select((value, i) => (value, i)))
                 {
                     Log.Debug("Trying ap file {0}", item.value);
-                    var zipFile = ZipFile.Read(item.value);
-                    var binEntries = zipFile.Where(entry => { return entry.FileName.ToLower().StartsWith("railvehicles/") && entry.FileName.EndsWith(".bin"); }).ToList();
+                    IReadOnlyList<string> allEntries = ApArchiveIndex.GetEntryNames(item.value);
+                    List<string> binEntries = allEntries
+                        .Where(name => name.StartsWith("railvehicles/", StringComparison.OrdinalIgnoreCase)
+                                       && name.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
 
-                    if (!binEntries.Any())
+                    if (binEntries.Count == 0)
                     {
-                        binEntries = zipFile.Where(entry => { return entry.FileName.EndsWith(".bin"); }).ToList();
+                        binEntries = allEntries
+                            .Where(name => name.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+                            .ToList();
                     }
 
                     var baseProgress = (int)Math.Ceiling((float)item.i / apFiles.Count() * 100);
@@ -338,8 +342,7 @@ namespace LocoSwap
                     Log.Debug("There are {0} bin entries", binCount);
                     Parallel.ForEach(binEntries.Select((value, i) => (value, i)), (binItem) =>
                     {
-                        var binEntry = binItem.value;
-                        var binPath = Path.Combine(basePath, binEntry.FileName.Replace('/', '\\'));
+                        var binPath = Path.Combine(basePath, binItem.value.Replace('/', '\\'));
                         try
                         {
                             Log.Debug("Try {0}", binPath);
@@ -349,16 +352,16 @@ namespace LocoSwap
                                 ViewModel.AvailableVehicles.Add(vehicle);
                             });
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-
+                            // Most .bin files in an .ap are not rolling stock; only log at Debug
+                            Log.Debug("Skipping {0}: {1}", binPath, ex.Message);
                         }
 
                         var ownProgress = (int)Math.Ceiling((float)binItem.i / binCount * 100 / apFiles.Count());
                         progress.Report(baseProgress + ownProgress);
                         token.ThrowIfCancellationRequested();
                     });
-                    zipFile.Dispose();
                     token.ThrowIfCancellationRequested();
                 }
             }, token);
@@ -546,12 +549,12 @@ namespace LocoSwap
                 AvailableVehicle actualVehicle = new AvailableVehicle(Path.ChangeExtension(vehicle.XmlPath, "bin"));
                 list = actualVehicle.NumberingList;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Log.Debug("ChangeNumberButton: could not load numbering list for {0}: {1}", vehicle.XmlPath, ex.Message);
             }
 
-            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(list, VehicleNumberSelectionWindow.WindowType.Selection, string.Copy(vehicle.Number));
+            VehicleNumberSelectionWindow window = new VehicleNumberSelectionWindow(list, VehicleNumberSelectionWindow.WindowType.Selection, vehicle.Number);
             window.ShowDialog();
 
             if (window.DialogResult == true)
@@ -590,6 +593,7 @@ namespace LocoSwap
             }
 
             AvailableVehicle newVehicle = (AvailableVehicle)AvailableVehicleListBox.SelectedItem;
+            int replacedCount = 0;
 
             foreach (Consist consist in ViewModel.Consists)
             {
@@ -603,10 +607,15 @@ namespace LocoSwap
                         vehicle.PossibleSubstitutionDisplayName = null;
 
                         consist.DetermineCompletenessAfterReplace();
+                        replacedCount++;
                     }
                 }
             }
 
+            Log.Information("Replace identical: {Count} vehicle(s) replaced with {Vehicle}", replacedCount, newVehicle.DisplayName);
+            MessageBox.Show(
+                string.Format("{0} matching vehicle(s) were replaced with {1}.", replacedCount, newVehicle.DisplayName),
+                LocoSwap.Language.Resources.msg_message, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void CancelScanningButton_Click(object sender, RoutedEventArgs e)
@@ -671,10 +680,10 @@ namespace LocoSwap
         {
             if (VehicleListBox.SelectedItems.Count == 0 || AvailableVehicleListBox.SelectedItem == null)
             {
-            MessageBox.Show(
-                    LocoSwap.Language.Resources.msg_no_vehicle_selected,
-                LocoSwap.Language.Resources.msg_message,
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(
+                        LocoSwap.Language.Resources.msg_no_vehicle_selected,
+                    LocoSwap.Language.Resources.msg_message,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -833,6 +842,7 @@ namespace LocoSwap
         private void ApplyAllRules(bool onlyOnMissingStock)
         {
             Dictionary<string, AvailableVehicle> availableVehicles = new Dictionary<string, AvailableVehicle>();
+            int replacedCount = 0;
 
             foreach (Consist consist in ViewModel.Consists)
             {
@@ -869,11 +879,18 @@ namespace LocoSwap
                                 ViewModel.Scenario.ChangeVehicleNumber(consist.Idx, vehicle.Idx, vehicle.Number);
                                 vehicle.PossibleSubstitutionDisplayName = null;
                                 consist.DetermineCompletenessAfterReplace();
+                                replacedCount++;
                             }
                         }
                     }
                 }
             }
+
+            Log.Information("Apply all rules ({Mode}): {Count} vehicle(s) replaced",
+                onlyOnMissingStock ? "missing stock only" : "all stock", replacedCount);
+            MessageBox.Show(
+                string.Format("{0} vehicle(s) were replaced by the replacement rules.", replacedCount),
+                LocoSwap.Language.Resources.msg_message, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void AvailableVehiclesFilter_TextChanged(object sender, TextChangedEventArgs e)

@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:p="clr-namespace:LocoSwap.Properties"
-        xmlns:lang="clr-namespace:LocoSwap.Language;assembly=LocoSwap.Language"
+        xmlns:loc="clr-namespace:LocoSwap"
         mc:Ignorable="d"
-        Title="{x:Static lang:Resources.replacement_rules_management}" Height="379" Width="600">
+        Title="{loc:Loc replacement_rules_management}" Height="379" Width="600">
     <Window.Resources>
         <DataTemplate x:Key="FirstCell">
             <StackPanel Orientation="Horizontal">
@@ -30,15 +30,15 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn CellTemplate="{StaticResource FirstCell}" Width="30"/>
-                    <GridViewColumn CellTemplate="{StaticResource FindCell}" Header="{x:Static lang:Resources.rule_find}" Width="254"/>
-                    <GridViewColumn CellTemplate="{StaticResource ReplaceWithCell}" Header="{x:Static lang:Resources.rule_replace}" Width="254" />
+                    <GridViewColumn CellTemplate="{StaticResource FindCell}" Header="{loc:Loc rule_find}" Width="254"/>
+                    <GridViewColumn CellTemplate="{StaticResource ReplaceWithCell}" Header="{loc:Loc rule_replace}" Width="254" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="ApplyButton" Content="{x:Static lang:Resources.apply}" HorizontalAlignment="Left" Margin="10,0,0,10.5" Width="119" VerticalAlignment="Bottom" Click="ApplyButton_Click"/>
-        <Button x:Name="DeleteButton" Content="{x:Static lang:Resources.delete}" HorizontalAlignment="Left" Margin="134,0,0,10.5" Width="117" VerticalAlignment="Bottom" Click="DeleteButton_Click"/>
-        <Button x:Name="CloseButton" Content="{x:Static lang:Resources.close}" Margin="0,0,10,10.5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="CloseButton_Click"/>
-        <Label Content="{x:Static lang:Resources.filter}" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="ApplyButton" Content="{loc:Loc apply}" HorizontalAlignment="Left" Margin="10,0,0,10.5" Width="119" VerticalAlignment="Bottom" Click="ApplyButton_Click"/>
+        <Button x:Name="DeleteButton" Content="{loc:Loc delete}" HorizontalAlignment="Left" Margin="134,0,0,10.5" Width="117" VerticalAlignment="Bottom" Click="DeleteButton_Click"/>
+        <Button x:Name="CloseButton" Content="{loc:Loc close}" Margin="0,0,10,10.5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75" Click="CloseButton_Click"/>
+        <Label Content="{loc:Loc filter}" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top"/>
         <TextBox Name="PresetsFilterTextbox" TextChanged="PresetsFilter_TextChanged" HorizontalAlignment="Left" Margin="72,13,0,0" VerticalAlignment="Top" Width="164"/>
         <Button HorizontalAlignment="Left" Margin="236,13,0,0" VerticalAlignment="Top" Height="18" Click="EmptyPresetFilter_Click">
             <Image Source="/Resources/Delete.png"/>

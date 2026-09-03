@@ -1,0 +1,24 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 'annotations' understands ?-syntax project-wide without flooding the build with
+         ~300 warnings from legacy code. New/touched files opt into full checking with a
+         '#nullable enable' line at the top; burn the backlog down file by file. -->
+    <Nullable>annotations</Nullable>
+    <Deterministic>true</Deterministic>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+
+    <!-- Modern analyzers plus code-style enforcement. .editorconfig holds the rules;
+         CI runs "dotnet format" in verify mode to gate them. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <!-- 'Default' keeps the analyzer set to a small curated list surfaced as warnings,
+         matching the incremental-cleanup approach used for nullable. Bump to
+         'Recommended'/'All' once the backlog is burned down. -->
+    <AnalysisMode>Default</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+</Project>

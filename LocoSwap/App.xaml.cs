@@ -1,13 +1,12 @@
-﻿using LocoSwap.Properties;
-using Serilog;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
+using LocoSwap.Properties;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -22,39 +21,28 @@ namespace LocoSwap
 
             try
             {
+                // Keep the previous session's log so a crash can still be diagnosed after a restart
                 if (File.Exists("debug.log"))
                 {
+                    File.Copy("debug.log", "debug.previous.log", overwrite: true);
                     File.Delete("debug.log");
                 }
             }
             catch (Exception)
             {
-                Debug.Print("Can not delete existing log file");
+                Debug.Print("Can not rotate existing log file");
             }
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.Console()
+                .WriteTo.Debug()
                 .WriteTo.File("debug.log",
                     rollingInterval: RollingInterval.Infinite,
-                    rollOnFileSizeLimit: false)
+                    rollOnFileSizeLimit: true,
+                    fileSizeLimitBytes: 20 * 1024 * 1024)
                 .CreateLogger();
 
             Log.Debug("LocoSwap version {0} starting up..", Assembly.GetEntryAssembly().GetName().Version.ToString());
-
-            if (Settings.Default.UpgradeRequired)
-            {
-                Log.Debug("Upgrade detected, migrating settings..");
-                try
-                {
-                    Settings.Default.Upgrade();
-                    Settings.Default.UpgradeRequired = false;
-                }
-                catch (Exception)
-                {
-                    Log.Debug("Could not migrate settings!");
-                }
-            }
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
@@ -66,14 +54,16 @@ namespace LocoSwap
                 Directory.CreateDirectory(Utilities.GetTempDir());
             }
 
-            string[] files = Directory.GetFiles(Utilities.GetTempDir());
-            foreach (string file in files)
+            foreach (string file in Directory.GetFiles(Utilities.GetTempDir()))
             {
                 File.SetAttributes(file, FileAttributes.Normal);
                 File.Delete(file);
             }
-
-            if (Settings.Default.Preset == null) Settings.Default.Preset = new SwapPreset();
+            // Per-scenario working folders left behind by an interrupted consist check
+            foreach (string dir in Directory.GetDirectories(Utilities.GetTempDir()))
+            {
+                try { Directory.Delete(dir, true); } catch { /* best effort */ }
+            }
 
             while (Settings.Default.TsPath == "")
             {
@@ -103,21 +93,49 @@ namespace LocoSwap
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            Log.Warning("Uncaught exception: {0} - {1}\n{2}", e.Exception.GetType().ToString(), e.Exception.Message, e.Exception.StackTrace.ToString());
-            Current.Shutdown();
+            ReportFatalException(e.Exception, "Dispatcher");
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception exception = (Exception)e.ExceptionObject;
-            Log.Warning("Uncaught exception: {0}", exception.Message);
+            ReportFatalException(e.ExceptionObject as Exception, "AppDomain");
+        }
+
+        private static bool _fatalReported;
+
+        private void ReportFatalException(Exception exception, string source)
+        {
+            if (_fatalReported) return; // avoid a second dialog while we are already tearing down
+            _fatalReported = true;
+
+            Log.Fatal(exception, "Unhandled exception ({Source})", source);
+            Log.CloseAndFlush();
+
+            try
+            {
+                string logPath = Path.GetFullPath("debug.log");
+                string details = exception == null
+                    ? "Unknown error."
+                    : exception.GetType().Name + ": " + exception.Message;
+                MessageBox.Show(
+                    "LocoSwap hit an unexpected error and needs to close.\n\n" +
+                    details + "\n\nA log has been saved to:\n" + logPath,
+                    Language.Resources.msg_error,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch
+            {
+                // If even the dialog fails there is nothing more we can do
+            }
+
             Current.Shutdown();
         }
 
         public void SetLanguageDictionary()
         {
             var lang = Settings.Default.Language;
-            if (lang == "") lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+            if (lang == "") lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
             Log.Debug("Set language to {0}", lang);
             switch (lang)
             {
@@ -130,6 +148,12 @@ namespace LocoSwap
                 case "it":
                     Language.Resources.Culture = new System.Globalization.CultureInfo("it-IT");
                     break;
+                case "es":
+                    Language.Resources.Culture = new System.Globalization.CultureInfo("es-ES");
+                    break;
+                case "pl":
+                    Language.Resources.Culture = new System.Globalization.CultureInfo("pl-PL");
+                    break;
                 case "nl":
                     Language.Resources.Culture = new System.Globalization.CultureInfo("nl-NL");
                     break;
@@ -141,6 +165,9 @@ namespace LocoSwap
                     Language.Resources.Culture = new System.Globalization.CultureInfo("en-US");
                     break;
             }
+
+            // Push the new strings into every {loc:Loc ...} binding already on screen
+            LocalizationSource.Instance.Refresh();
         }
     }
 }

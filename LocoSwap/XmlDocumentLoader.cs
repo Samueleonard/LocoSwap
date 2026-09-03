@@ -1,9 +1,9 @@
-﻿using Serilog;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Serilog;
 
 namespace LocoSwap
 {

@@ -1,54 +1,58 @@
-﻿using Ionic.Zip;
-using LocoSwap.Properties;
-using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using LocoSwap.Properties;
+using Serilog;
 
 namespace LocoSwap
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public ObservableCollection<Route> Routes { get; } = new ObservableCollection<Route>();
         public ObservableCollection<Scenario> Scenarios { get; } = new ObservableCollection<Scenario>();
         public string WindowTitle { get; set; } = "LocoSwap";
+
+        private int _busyCount;
+        public bool IsBusy => _busyCount > 0;
+
+        private void EnterBusy()
+        {
+            _busyCount++;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBusy)));
+        }
+
+        private void ExitBusy()
+        {
+            if (_busyCount > 0) _busyCount--;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBusy)));
+        }
         public MainWindow()
         {
             InitializeComponent();
             UpdateColumnVisibility();
+            RestoreWindowPlacement();
 
             DataContext = this;
             WindowTitle = "LocoSwap " + Assembly.GetEntryAssembly().GetName().Version.ToString();
-
-            var routes = Route.ListAllRoutes();
-
-            foreach (Route route in routes)
-            {
-                try
-                {
-                    route.PropertyChanged += Route_PropertyChanged;
-                    Routes.Add(route);
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            // Asynchronously read the scenario DB to populate the Scenario completion status
-            ReadScenarioDb();
 
             FileSystemWatcher watcher = new FileSystemWatcher(Path.Combine(Properties.Settings.Default.TsPath, "Content"));
 
@@ -64,8 +68,13 @@ namespace LocoSwap
             Loaded += On_MainWindow_Loaded;
         }
 
-        private void On_MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private bool _initialLoadDone;
+
+        private async void On_MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if (_initialLoadDone) return;
+            _initialLoadDone = true;
+
             // Add filter to RouteList
             CollectionView RouteListview = (CollectionView)CollectionViewSource.GetDefaultView(RouteList.ItemsSource);
             RouteListview.Filter = RouteFilter;
@@ -73,6 +82,129 @@ namespace LocoSwap
             // Add filter to ScenarioList
             CollectionView ScenarioListview = (CollectionView)CollectionViewSource.GetDefaultView(ScenarioList.ItemsSource);
             ScenarioListview.Filter = ScenarioFilter;
+
+            await LoadRoutesAsync();
+
+            // Asynchronously read the scenario DB to populate the Scenario completion status
+            ReadScenarioDb();
+        }
+
+        /// <summary>
+        /// (Re)enumerate the routes off the UI thread. Also used after a language change, since
+        /// route and scenario display names are resolved in the currently selected language.
+        /// </summary>
+        private async Task LoadRoutesAsync()
+        {
+            Route[] routes;
+            EnterBusy();
+            try
+            {
+                routes = await Task.Run(Route.ListAllRoutes);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to enumerate routes");
+                MessageBox.Show(
+                    "LocoSwap could not read the Train Simulator routes folder.\n\n" + ex.Message +
+                    "\n\nCheck the Train Simulator path in settings. Details are in debug.log.",
+                    LocoSwap.Language.Resources.msg_error, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            finally
+            {
+                ExitBusy();
+            }
+
+            string previouslySelectedId = (RouteList.SelectedItem as Route)?.Id ?? Settings.Default.LastRouteId;
+
+            foreach (Route existing in Routes)
+            {
+                existing.PropertyChanged -= Route_PropertyChanged;
+            }
+            Routes.Clear();
+            Scenarios.Clear();
+
+            foreach (Route route in routes)
+            {
+                route.PropertyChanged += Route_PropertyChanged;
+                Routes.Add(route);
+            }
+
+            // Reselect the route that was active before
+            if (!string.IsNullOrEmpty(previouslySelectedId))
+            {
+                Route previous = Routes.FirstOrDefault(r => r.Id == previouslySelectedId);
+                if (previous != null) RouteList.SelectedItem = previous;
+            }
+
+            // A populated routes folder that yields nothing almost always means a wrong TS path
+            bool routesFolderHasContent = Directory.Exists(Route.GetRoutesDirectory())
+                && Directory.EnumerateDirectories(Route.GetRoutesDirectory()).GetEnumerator().MoveNext();
+            if (routes.Length == 0 && routesFolderHasContent)
+            {
+                MessageBox.Show(
+                    "No routes could be loaded, although the routes folder is not empty. " +
+                    "Some routes may be corrupt, or the Train Simulator path may be wrong. See debug.log for details.",
+                    LocoSwap.Language.Resources.msg_error, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void RestoreWindowPlacement()
+        {
+            string saved = Settings.Default.MainWindowPlacement;
+            if (string.IsNullOrWhiteSpace(saved)) return;
+
+            string[] parts = saved.Split(';');
+            if (parts.Length != 5) return;
+            if (!(double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double left)
+                & double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double top)
+                & double.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out double width)
+                & double.TryParse(parts[3], NumberStyles.Float, CultureInfo.InvariantCulture, out double height)))
+            {
+                return;
+            }
+            if (width < 300 || height < 200) return;
+
+            // Ignore a saved rectangle that no longer lands on any monitor
+            var virtualScreen = new Rect(
+                SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop,
+                SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+            if (!virtualScreen.IntersectsWith(new Rect(left, top, width, height))) return;
+
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = left;
+            Top = top;
+            Width = width;
+            Height = height;
+            if (parts[4] == "Maximized") WindowState = WindowState.Maximized;
+        }
+
+        private void SaveWindowPlacement()
+        {
+            Rect bounds = WindowState == WindowState.Normal
+                ? new Rect(Left, Top, Width, Height)
+                : RestoreBounds;
+            Settings.Default.MainWindowPlacement = string.Join(";",
+                bounds.Left.ToString(CultureInfo.InvariantCulture),
+                bounds.Top.ToString(CultureInfo.InvariantCulture),
+                bounds.Width.ToString(CultureInfo.InvariantCulture),
+                bounds.Height.ToString(CultureInfo.InvariantCulture),
+                WindowState == WindowState.Maximized ? "Maximized" : "Normal");
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            try
+            {
+                SaveWindowPlacement();
+                Settings.Default.LastRouteId = (RouteList.SelectedItem as Route)?.Id ?? "";
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Log.Debug("Could not persist window state: {0}", ex.Message);
+            }
+            base.OnClosing(e);
         }
 
         private void Route_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -80,8 +212,7 @@ namespace LocoSwap
             if (e.PropertyName == "IsFavorite")
             {
                 Route route = sender as Route;
-                StringCollection favorite = Properties.Settings.Default.FavoriteRoutes ?? new StringCollection();
-                if (Properties.Settings.Default.FavoriteRoutes == null) Properties.Settings.Default.FavoriteRoutes = favorite;
+                var favorite = Properties.Settings.Default.FavoriteRoutes;
                 if (route.IsFavorite)
                 {
                     Log.Debug("Adding {0} to favorite..", route.Name);
@@ -108,11 +239,91 @@ namespace LocoSwap
             }
         }
 
-        private void Refresh_Scenario_List()
+        private CancellationTokenSource _consistCheckCts;
+
+        private async void Refresh_Scenario_List()
         {
+            // Abandon any consist check still running for the previously selected route
+            _consistCheckCts?.Cancel();
+
             Scenarios.Clear();
             Route route = (Route)RouteList.SelectedItem;
+            if (route == null) return;
 
+            List<Scenario> scenarios;
+            EnterBusy();
+            try
+            {
+                scenarios = await Task.Run(() => BuildScenarioList(route));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Failed to list scenarios for route {0}: {1}", route.Id, e.Message);
+                return;
+            }
+            finally
+            {
+                ExitBusy();
+            }
+
+            // The selection may have moved on while we were loading
+            if (!ReferenceEquals(RouteList.SelectedItem, route)) return;
+
+            foreach (Scenario scenario in scenarios)
+            {
+                Scenarios.Add(scenario);
+            }
+            CollectionViewSource.GetDefaultView(ScenarioList.ItemsSource)?.Refresh();
+
+            if (Settings.Default.CheckScenarioConsists)
+            {
+                await CheckAllConsistsAsync(scenarios, route);
+            }
+        }
+
+        /// <summary>
+        /// Fill in every scenario's consist status dot. serz + parse runs in parallel across
+        /// scenarios (each is an independent process), cached results come back instantly, and
+        /// each row's dot updates as soon as its own check finishes.
+        /// </summary>
+        private async Task CheckAllConsistsAsync(List<Scenario> scenarios, Route route)
+        {
+            var cts = new CancellationTokenSource();
+            _consistCheckCts = cts;
+
+            EnterBusy();
+            try
+            {
+                int degree = Math.Clamp(Environment.ProcessorCount - 1, 1, 8);
+                await Task.Run(() => Parallel.ForEach(
+                    scenarios,
+                    new ParallelOptions { MaxDegreeOfParallelism = degree, CancellationToken = cts.Token },
+                    scenario =>
+                    {
+                        scenario.CheckConsists();
+                        Dispatcher.BeginInvoke(new Action(scenario.NotifyConsistCheckComplete));
+                    }));
+            }
+            catch (OperationCanceledException)
+            {
+                // Route selection moved on; nothing to report
+            }
+            catch (Exception e)
+            {
+                Log.Error("Consist check failed for route {0}: {1}", route.Id, e.Message);
+            }
+            finally
+            {
+                ExitBusy();
+                ScenarioConsistCache.Flush();
+                if (ReferenceEquals(_consistCheckCts, cts)) _consistCheckCts = null;
+                cts.Dispose();
+            }
+        }
+
+        private static List<Scenario> BuildScenarioList(Route route)
+        {
+            var scenarios = new List<Scenario>();
             string routeDirectory = Route.GetRouteDirectory(route.Id);
             string scenariosDirectory = Scenario.GetScenariosDirectory(route.Id);
 
@@ -126,48 +337,43 @@ namespace LocoSwap
                     string xmlPathIfArchived = Path.Combine(directory, "ScenarioPropertiesLocoSwapOff.xml");
                     string binPath = Path.Combine(directory, "Scenario.bin");
                     if (!File.Exists(binPath) || (!File.Exists(xmlPath) && !File.Exists(xmlPathIfArchived))) continue;
-                    Scenarios.Add(new Scenario(route, id, ""));
+                    scenarios.Add(new Scenario(route, id, ""));
                 }
             }
             string[] allowedExtensions = new[] { ".ap", ".ap.LSoff" };
             string[] apFiles = Directory.GetFiles(routeDirectory, "*", SearchOption.TopDirectoryOnly).Where(file => allowedExtensions.Any(file.EndsWith)).ToArray();
+            var scenarioPropFileRegex = new Regex(@"^(Scenarios/([a-f\d\-]{36})/)ScenarioProperties\.xml$");
             foreach (string apPath in apFiles)
             {
-
                 try
                 {
-                    ZipFile zipFile = ZipFile.Read(apPath);
-                    try
+                    IReadOnlyList<string> entryNames = ApArchiveIndex.GetEntryNames(apPath);
+                    foreach (string name in entryNames)
                     {
+                        Match match = scenarioPropFileRegex.Match(name);
+                        if (!match.Success) continue;
 
-
-                        Regex scenarioPropFileRegex = new Regex(@"^(Scenarios/([a-f\d\-]{36})/)ScenarioProperties\.xml$");
-                        foreach (ZipEntry file in zipFile)
+                        bool hasScenarioBin = entryNames.Contains(match.Groups[1].Value + "Scenario.bin");
+                        bool alreadyUnpacked = File.Exists(
+                            Path.Combine(routeDirectory, "Scenarios", match.Groups[2].Value, "ScenarioProperties.xml"));
+                        if (hasScenarioBin && !alreadyUnpacked)
                         {
-                            Match match = scenarioPropFileRegex.Match(file.FileName);
-                            if (match.Success &&
-                                zipFile.Select(file2 => file2.FileName == match.Groups[1].Value + "Scenario.bin").Count() > 0 &&
-                                !File.Exists(Path.Combine(routeDirectory, "Scenarios", match.Groups[2].Value, "ScenarioProperties.xml")))
-                            {
-                                Scenarios.Add(new Scenario(route, match.Groups[2].Value, apPath));
-                            }
+                            scenarios.Add(new Scenario(route, match.Groups[2].Value, apPath));
+                        }
+                        else if (!hasScenarioBin)
+                        {
+                            // Template/Quick Drive scenarios ship only ScenarioProperties.xml with no
+                            // editable Scenario.bin - skip them (trying to open one used to crash).
+                            Log.Debug("Skipping scenario {0} in {1}: no Scenario.bin", match.Groups[2].Value, Path.GetFileName(apPath));
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Log.Error("Error while reading " + apPath + " for scenarios, " + e.Message);
-                    }
-                    finally
-                    {
-                        zipFile.Dispose();
-                    }
                 }
-
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Log.Error("Couldn't read " + apPath + " for scenarios, " + e.Message);
                 }
             }
+            return scenarios;
         }
 
         private void EditScenarioButton_Click(object sender, RoutedEventArgs e)
@@ -183,20 +389,27 @@ namespace LocoSwap
             {
                 if (scenario.ApFileName == "")
                 {
-                    Process.Start(scenario.ScenarioDirectory);
+                    Process.Start(new ProcessStartInfo(scenario.ScenarioDirectory) { UseShellExecute = true });
                 }
             }
         }
 
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private async void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             bool previousCheckScenarioConsistsValue = Settings.Default.CheckScenarioConsists;
+            string previousLanguage = Settings.Default.Language;
 
             new SettingsWindow().ShowDialog();
 
             if (previousCheckScenarioConsistsValue != Settings.Default.CheckScenarioConsists)
             {
                 UpdateColumnVisibility();
+            }
+
+            // Route/scenario display names are language-specific - re-read them
+            if (previousLanguage != Settings.Default.Language)
+            {
+                await LoadRoutesAsync();
             }
         }
 
@@ -255,7 +468,7 @@ namespace LocoSwap
                 }
             }
         }
-        
+
         private bool RouteFilter(object item)
         {
             if (string.IsNullOrEmpty(RouteFilterTextbox.Text))
@@ -311,9 +524,9 @@ namespace LocoSwap
             {
                 ScenarioDb.ParseScenarioDb();
             });
-            
+
             Log.Debug("ReadScenarioDb is about to invoke parallel read");
-            
+
             await Task.WhenAll(readDbTask);
 
             Log.Debug("SDB is read, refreshing scenarios list");

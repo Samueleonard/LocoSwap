@@ -1,7 +1,8 @@
-﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -24,17 +25,22 @@ namespace LocoSwap
         }
 
         // Represents the scenario completion infos as found in the SDBCache.bin TS file
-        // The first key is the route UUID, the second is the scenario UUID
-        private static Dictionary<string, Dictionary<string, ScenarioCompletion>> scenarioDb;
+        // The first key is the route UUID, the second is the scenario UUID.
+        // The reference is swapped atomically by ParseScenarioDb once it is fully built, so
+        // readers only ever observe a complete map (never a half-populated one).
+        private static volatile Dictionary<string, Dictionary<string, ScenarioCompletion>> scenarioDb =
+            new Dictionary<string, Dictionary<string, ScenarioCompletion>>();
 
         public static DBState dbState = DBState.Init;
 
         public static ScenarioCompletion getScenarioDbInfos(string routeId, string scenarioId)
         {
-            if (scenarioDb.ContainsKey(routeId) && scenarioDb[routeId].ContainsKey(scenarioId))
+            var db = scenarioDb;
+            if (db.TryGetValue(routeId, out var route) && route.TryGetValue(scenarioId, out var completion))
             {
-                return scenarioDb[routeId][scenarioId];
-            } else if (dbState == DBState.Loaded)
+                return completion;
+            }
+            else if (dbState == DBState.Loaded)
             {
                 return ScenarioCompletion.NotInDB;
             }
@@ -44,7 +50,7 @@ namespace LocoSwap
         // Get all scenario completion status for one route, for the archiving feature
         public static Dictionary<string, ScenarioCompletion> getScenarioDbRouteInfos(string routeId)
         {
-            return scenarioDb.ContainsKey(routeId) ? scenarioDb[routeId] : new Dictionary<string, ScenarioCompletion>();
+            return scenarioDb.TryGetValue(routeId, out var route) ? route : new Dictionary<string, ScenarioCompletion>();
         }
 
         public static void ParseScenarioDb()
@@ -58,7 +64,7 @@ namespace LocoSwap
             }
 
             dbState = DBState.Loading;
-            scenarioDb = new Dictionary<string, Dictionary<string, ScenarioCompletion>>();
+            var newDb = new Dictionary<string, Dictionary<string, ScenarioCompletion>>();
 
             string dbPath = Path.Combine(Properties.Settings.Default.TsPath, "Content", "SDBCache.bin");
             if (File.Exists(dbPath))
@@ -89,20 +95,24 @@ namespace LocoSwap
                         XReaderSDB.Read();
 
                         // Add completion status to our internal DB
-                        if(!scenarioDb.ContainsKey(routeId))
+                        if (!newDb.ContainsKey(routeId))
                         {
-                            scenarioDb[routeId] = new Dictionary<string, ScenarioCompletion>();
+                            newDb[routeId] = new Dictionary<string, ScenarioCompletion>();
                         }
-                        scenarioDb[routeId][scenarioId] = parseCompletion(XReaderSDB.Value);
+                        newDb[routeId][scenarioId] = parseCompletion(XReaderSDB.Value);
                     }
+
+                    // Publish the fully-built map in one atomic reference swap
+                    scenarioDb = newDb;
                     dbState = DBState.Loaded;
 
                     // Uncompressed DB can be quite large, we delete it now instead of waiting for the next LocoSwap launch
                     origStream.Close();
                     File.Delete(xmlScenarioDbPath);
                 }
-                catch
+                catch (Exception e)
                 {
+                    Log.Error(e, "Failed to parse SDBCache.bin");
                     dbState = DBState.Error;
                 }
 
@@ -115,7 +125,7 @@ namespace LocoSwap
             Log.Debug("SDB has been read");
         }
 
-        public static ScenarioCompletion parseCompletion (string input)
+        public static ScenarioCompletion parseCompletion(string input)
         {
             ScenarioCompletion parsedReturn = ScenarioCompletion.Unknown;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -9,21 +9,20 @@ namespace LocoSwap
     class VehicleGenerator
     {
         private static XNamespace Namespace = "http://www.kuju.com/TnT/2003/Delta";
-        public static Tuple<XElement, ScenarioVehicle> GenerateVehicle(XElement prevElem, AvailableVehicle vehicle)
+        public static (XElement Entity, ScenarioVehicle Vehicle) GenerateVehicle(XElement prevElem, AvailableVehicle vehicle)
         {
             var retVehicle = new ScenarioVehicle();
             retVehicle.CopyFrom(vehicle);
 
-            XDocument doc;
-
+            // The template XML uses the 'd:' prefix without declaring it, so parse through an
+            // XmlReader primed with a namespace manager rather than XDocument.Parse directly.
             XmlNamespaceManager mgr = new XmlNamespaceManager(new NameTable());
             mgr.AddNamespace("d", "http://www.kuju.com/TnT/2003/Delta");
             XmlParserContext ctx = new XmlParserContext(null, mgr, null, XmlSpace.Default);
+            XDocument doc;
             using (XmlReader reader = XmlReader.Create(new StringReader(VehicleTemplates.GetXml(vehicle.Type)), null, ctx))
             {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(reader);
-                doc = XDocument.Parse(xmlDoc.OuterXml);
+                doc = XDocument.Load(reader);
             }
 
             var cOwnedEntity = doc.Root;
@@ -68,8 +67,8 @@ namespace LocoSwap
             for (var i = 0; i < vehicle.CargoCount; i++)
             {
                 var newNode = Utilities.GenerateCargoComponentItem(
-                    vehicle.CargoComponents[i].Item1,
-                    vehicle.CargoComponents[i].Item2);
+                    vehicle.CargoComponents[i].Capacity,
+                    vehicle.CargoComponents[i].AltEncoding);
                 cCargoComponent.Add(newNode);
             }
 
@@ -82,10 +81,9 @@ namespace LocoSwap
                 .DescendantsAndSelf()
                 .Where(elem => elem.Attribute(Namespace + "id") != null);
 
-            Random idRandom = new Random();
             foreach (var elem in idElements)
             {
-                var id = idRandom.Next(100000000, 999999999);
+                var id = Random.Shared.Next(100000000, 999999999);
                 elem.SetAttributeValue(Namespace + "id", id);
             }
 
@@ -115,7 +113,7 @@ namespace LocoSwap
                 cAbsoluteBlueprintID.Element("BlueprintID").SetValue(vehicle.ReskinBlueprintId);
             }
 
-            return new Tuple<XElement, ScenarioVehicle>(cOwnedEntity, retVehicle);
+            return (cOwnedEntity, retVehicle);
         }
     }
 }

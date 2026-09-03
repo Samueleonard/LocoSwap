@@ -1,6 +1,3 @@
-﻿using Ionic.Zip;
-using LocoSwap.Properties;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +7,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using LocoSwap.Properties;
+using Serilog;
 
 namespace LocoSwap
 {
@@ -45,9 +44,11 @@ namespace LocoSwap
         public uint Duration { get; set; } = 0;
         public string Author { get; set; }
         public Seasons Season { get; set; }
-        public string LocalizedSeason { get { return Language.Resources.ResourceManager.GetString("season_" + Season.ToString().ToLower(), Language.Resources.Culture); }  }
-        public ScenarioDb.ScenarioCompletion Completion {
-            get {
+        public string LocalizedSeason { get { return Language.Resources.ResourceManager.GetString("season_" + Season.ToString().ToLower(), Language.Resources.Culture); } }
+        public ScenarioDb.ScenarioCompletion Completion
+        {
+            get
+            {
                 ScenarioDb.ScenarioCompletion completionFromSDB = ScenarioDb.getScenarioDbInfos(RouteId, Id);
                 if (completionFromSDB == ScenarioDb.ScenarioCompletion.CompletedSuccessfully || completionFromSDB == ScenarioDb.ScenarioCompletion.CompletedFailed)
                 {
@@ -106,19 +107,44 @@ namespace LocoSwap
         {
             ApFileName = apFileName;
             Load(route, id);
+        }
 
-            if (Settings.Default.CheckScenarioConsists)
+        /// <summary>
+        /// Populate <see cref="ScenarioVehiclesExist"/> (the route-list status dot). Serves the
+        /// result from <see cref="ScenarioConsistCache"/> when the scenario is unchanged,
+        /// otherwise runs serz + a full consist parse. Safe to call from a worker thread;
+        /// call <see cref="NotifyConsistCheckComplete"/> on the UI thread afterwards.
+        /// </summary>
+        public void CheckConsists()
+        {
+            ScenarioVehicleExistance? cached = ScenarioConsistCache.TryGet(RouteId, Id, ApFileName);
+            if (cached != null)
             {
-                try
-                {
-                    ReadScenario();
-                    GetConsists();
-                }
-                catch (Exception e)
-                {
-                    Log.Debug(e.ToString());
-                }
+                _scenarioVehiclesExist = cached.Value;
+                return;
             }
+
+            try
+            {
+                ReadScenario();
+                GetConsists();
+                ScenarioConsistCache.Store(RouteId, Id, ApFileName, ScenarioVehiclesExist);
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Consist check failed for scenario {0}: {1}", Id, e);
+            }
+            finally
+            {
+                // The parsed XML is only needed for the check; the edit window re-reads it.
+                ScenarioXml = null;
+            }
+        }
+
+        /// <summary>Raise change notification for <see cref="ScenarioVehiclesExist"/>. UI-thread only.</summary>
+        public void NotifyConsistCheckComplete()
+        {
+            OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(ScenarioVehiclesExist)));
         }
 
         public void Load(Route route, string id)
@@ -130,13 +156,12 @@ namespace LocoSwap
             {
                 if (ApFileName != "")
                 {
-                    ZipFile apFile = ZipFile.Read(ApFileName);
-
-                    ZipEntry scenarioPropertiesFile = apFile.Where(file => file.FileName == "Scenarios/" + id + "/ScenarioProperties.xml").FirstOrDefault();
-
                     MemoryStream ms = new MemoryStream();
-                    scenarioPropertiesFile.Extract(ms);
-                    apFile.Dispose();
+                    using (var apFile = ZipHelper.OpenRead(ApFileName))
+                    {
+                        var scenarioPropertiesFile = apFile.Entries.FirstOrDefault(file => file.FullName == "Scenarios/" + id + "/ScenarioProperties.xml");
+                        scenarioPropertiesFile.ExtractToStream(ms);
+                    }
                     ms.Position = 0;
                     ScenarioProperties = XDocument.Parse(new StreamReader(ms).ReadToEnd());
                 }
@@ -235,27 +260,35 @@ namespace LocoSwap
         {
             progress?.Report(10);
 
-            string scenarioBinDir = "";
-
             if (ApFileName == "")
             {
-                scenarioBinDir = ScenarioDirectory;
+                ScenarioXml = TsSerializer.Load(Path.Combine(ScenarioDirectory, "Scenario.bin"));
             }
             else
             {
-                ZipFile apFile = ZipFile.Read(ApFileName);
-                apFile.FlattenFoldersOnExtract = true;
-                ZipEntry binEntry = apFile.Where(entry => entry.FileName == "Scenarios/" + Id + "/Scenario.bin").FirstOrDefault();
-                if (binEntry == null)
+                // Extract into a per-call temp folder so several .ap scenarios can be
+                // converted in parallel without clobbering a shared Scenario.bin.
+                string workDir = Path.Combine(Utilities.GetTempDir(), Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(workDir);
+                try
                 {
-                    throw new Exception("Unable to load scenario: bin file not found within .ap file " + ApFileName + " and Id " + Id);
-                }
-                binEntry.Extract(Utilities.GetTempDir(), ExtractExistingFileAction.OverwriteSilently);
-                scenarioBinDir = Utilities.GetTempDir();
-                apFile.Dispose();
-            }
+                    using (var apFile = ZipHelper.OpenRead(ApFileName))
+                    {
+                        var binEntry = apFile.Entries.FirstOrDefault(entry => entry.FullName == "Scenarios/" + Id + "/Scenario.bin");
+                        if (binEntry == null)
+                        {
+                            throw new Exception("Unable to load scenario: bin file not found within .ap file " + ApFileName + " and Id " + Id);
+                        }
+                        binEntry.ExtractEntry(workDir, true);
+                    }
 
-            ScenarioXml = TsSerializer.Load(Path.Combine(scenarioBinDir, "Scenario.bin"));
+                    ScenarioXml = TsSerializer.Load(Path.Combine(workDir, "Scenario.bin"));
+                }
+                finally
+                {
+                    try { Directory.Delete(workDir, true); } catch { /* best effort */ }
+                }
+            }
 
             progress?.Report(100);
         }
@@ -410,12 +443,11 @@ namespace LocoSwap
             if (entriesFound.FirstOrDefault() != null) return;
 
             XElement entry = new XElement("iBlueprintLibrary-cBlueprintSetID");
-            Random idRandom = new Random();
 
             int id;
             do
             {
-                id = idRandom.Next(100000000, 999999999);
+                id = Random.Shared.Next(100000000, 999999999);
             } while (ScenarioProperties.Descendants().Where(elem => (elem.Attribute(Namespace + "id") != null && elem.Attribute(Namespace + "id").Value == id.ToString())).Any());
 
             entry.SetAttributeValue(Namespace + "id", id.ToString());
@@ -527,12 +559,10 @@ namespace LocoSwap
 
                 cElement.Add(disabledEngine, awsTimer, awsExpired, tpwsDistance);
 
-                Random idRandom = new Random();
-
                 int id;
                 do
                 {
-                    id = idRandom.Next(100000000, 999999999);
+                    id = Random.Shared.Next(100000000, 999999999);
                 } while (ScenarioXml.Descendants().Where(elem => (elem.Attribute(Namespace + "id") != null && elem.Attribute(Namespace + "id").Value == id.ToString())).Any());
                 XElement cEngineSimContainer = new XElement("cEngineSimContainer");
                 cEngineSimContainer.SetAttributeValue(Namespace + "id", id.ToString());
@@ -569,8 +599,8 @@ namespace LocoSwap
                     for (int i = cargoCount; i < newVehicle.CargoCount; ++i)
                     {
                         var newNode = Utilities.GenerateCargoComponentItem(
-                            newVehicle.CargoComponents[i].Item1,
-                            newVehicle.CargoComponents[i].Item2);
+                            newVehicle.CargoComponents[i].Capacity,
+                            newVehicle.CargoComponents[i].AltEncoding);
                         cCargoComponent.Add(newNode);
                     }
                 }
@@ -730,7 +760,7 @@ namespace LocoSwap
             var insert = VehicleGenerator.GenerateVehicle(
                 atEnd ? vehicles.Elements("cOwnedEntity").Last() : vehicles.Elements("cOwnedEntity").ElementAt(insertPos),
                 vehicle);
-            var elem = insert.Item1;
+            var elem = insert.Entity;
             elem.Attribute(XNamespace.Xmlns + "d").Remove();
 
             if (atEnd)
@@ -748,7 +778,7 @@ namespace LocoSwap
             {
                 var e = new XElement("e");
                 e.SetAttributeValue(Namespace + "type", "cDeltaString");
-                e.SetValue(insert.Item2.Number);
+                e.SetValue(insert.Vehicle.Number);
 
                 var initialRV = cDriver.Element("InitialRV");
                 if (atEnd)
@@ -767,7 +797,7 @@ namespace LocoSwap
 
             CreateBlueprintSetPreLoad(vehicle.Provider, vehicle.Product);
 
-            return insert.Item2;
+            return insert.Vehicle;
         }
 
         public void RemoveVehicle(int consistIdx, int vehicleIdx)
@@ -829,11 +859,10 @@ namespace LocoSwap
                 // If scenario is inside an AP, we extract the scenario dir
                 try
                 {
-                    ZipFile apFile = ZipFile.Read(ApFileName);
-
-                    apFile.ExtractSelectedEntries("*", "Scenarios/" + Id + "/", Route.GetRouteDirectory(RouteId), ExtractExistingFileAction.OverwriteSilently);
-
-                    apFile.Dispose();
+                    using (var apFile = ZipHelper.OpenRead(ApFileName))
+                    {
+                        apFile.ExtractEntriesUnder("Scenarios/" + Id + "/", Route.GetRouteDirectory(RouteId));
+                    }
                 }
                 catch (Exception)
                 {
@@ -873,7 +902,8 @@ namespace LocoSwap
             stream.Flush();
             stream.Close();
 
-            TsSerializer.Save(ScenarioXml, Path.Combine(Utilities.GetTempDir(), "Scenario.bin"));
+            var newScenarioBin = Path.Combine(Utilities.GetTempDir(), "Scenario.bin");
+            TsSerializer.Save(ScenarioXml, newScenarioBin);
 
             var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             var scenarioFileName = Path.Combine(ScenarioDirectory, "Scenario.bin");
@@ -881,11 +911,22 @@ namespace LocoSwap
             var scenarioPropertiesFileName = Path.Combine(ScenarioDirectory, "ScenarioProperties.xml");
             var scenarioPropertiesBackupFileName = Path.Combine(ScenarioDirectory, string.Format("ScenarioPropertiesBackup-{0}.xml", timestamp));
 
-            File.Copy(scenarioFileName, scenarioBackupFileName);
-            File.Copy(scenarioPropertiesFileName, scenarioPropertiesBackupFileName);
+            // Snapshot the current files before we touch anything
+            if (File.Exists(scenarioFileName)) File.Copy(scenarioFileName, scenarioBackupFileName, true);
+            if (File.Exists(scenarioPropertiesFileName)) File.Copy(scenarioPropertiesFileName, scenarioPropertiesBackupFileName, true);
 
-            File.Copy(Path.Combine(Utilities.GetTempDir(), "Scenario.bin"), scenarioFileName, true);
-            File.Copy(propertiesXmlPath, scenarioPropertiesFileName, true);
+            try
+            {
+                File.Copy(newScenarioBin, scenarioFileName, true);
+                File.Copy(propertiesXmlPath, scenarioPropertiesFileName, true);
+            }
+            catch
+            {
+                // Never leave a half-written scenario: put the originals back
+                if (File.Exists(scenarioBackupFileName)) File.Copy(scenarioBackupFileName, scenarioFileName, true);
+                if (File.Exists(scenarioPropertiesBackupFileName)) File.Copy(scenarioPropertiesBackupFileName, scenarioPropertiesFileName, true);
+                throw;
+            }
         }
 
         public void Delete()
