@@ -42,46 +42,55 @@
         <ui:TitleBar Grid.Row="0" Title="{Binding WindowTitle}" />
 
         <!-- Command bar -->
-        <ui:CardControl Grid.Row="1" Margin="12,4,12,8" Padding="8">
-            <StackPanel Orientation="Horizontal">
-                <ui:Button x:Name="EditScenarioButton" Icon="{ui:SymbolIcon Edit24}" Appearance="Primary"
-                           Content="{loc:Loc edit_scenario}" Click="EditScenarioButton_Click" Margin="0,0,6,0">
-                    <ui:Button.Style>
-                        <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-                            <Setter Property="IsEnabled" Value="False"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ScenarioList, Path=SelectedItems.Count}" Value="1">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ui:Button.Style>
-                </ui:Button>
-                <ui:Button Icon="{ui:SymbolIcon FolderOpen24}" Content="{loc:Loc open_scenario_directory}"
-                           IsEnabled="{Binding ElementName=ScenarioList, Path=SelectedItems.Count}"
-                           Click="OpenScenarioDirButton_Click" Margin="0,0,6,0" />
-                <ui:Button Icon="{ui:SymbolIcon Delete24}" Content="{loc:Loc delete_scenarios}"
-                           IsEnabled="{Binding SelectedItems.Count, ElementName=ScenarioList}"
-                           Click="Delete_Scenarios_Click" Margin="0,0,6,0" />
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
-                <ui:Button Icon="{ui:SymbolIcon Search24}" Content="{loc:Loc scan_all_consists}"
-                           Click="ScanAllConsistsButton_Click" Margin="0,0,6,0" />
-                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
-                <ui:Button Icon="{ui:SymbolIcon Archive24}" Content="{loc:Loc archive_toggle}"
-                           IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
-                           Click="ToggleArchiveRoutes_Click" Margin="0,0,6,0" />
-                <ui:Button Icon="{ui:SymbolIcon ArchiveMultiple24}" Content="{loc:Loc archive_rest}"
-                           ToolTip="AutoArchive"
-                           IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
-                           Click="ArchiveAllButSelectedRoutes_Click" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" FlowDirection="LeftToRight">
+        <Border Grid.Row="1" Margin="12,4,12,8" Padding="8" CornerRadius="8"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <!-- meta actions, pinned to the right edge -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="8,0,0,0">
                     <ui:Button x:Name="SettingsButton" Icon="{ui:SymbolIcon Settings24}"
-                               Content="{loc:Loc settings}" Click="SettingsButton_Click" Margin="6,0,6,0" />
+                               Content="{loc:Loc settings}" Click="SettingsButton_Click" Margin="0,0,6,0" />
                     <ui:Button Icon="{ui:SymbolIcon QuestionCircle24}" ToolTip="{loc:Loc open_manual}"
                                Click="OpenManual_Click" />
                 </StackPanel>
-            </StackPanel>
-        </ui:CardControl>
+
+                <!-- primary actions, scroll horizontally if the window is too narrow -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button x:Name="EditScenarioButton" Icon="{ui:SymbolIcon Edit24}" Appearance="Primary"
+                                   Content="{loc:Loc edit_scenario}" Click="EditScenarioButton_Click" Margin="0,0,6,0">
+                            <ui:Button.Style>
+                                <Style TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=ScenarioList, Path=SelectedItems.Count}" Value="1">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ui:Button.Style>
+                        </ui:Button>
+                        <ui:Button Icon="{ui:SymbolIcon FolderOpen24}" Content="{loc:Loc open_scenario_directory}"
+                                   IsEnabled="{Binding ElementName=ScenarioList, Path=SelectedItems.Count}"
+                                   Click="OpenScenarioDirButton_Click" Margin="0,0,6,0" />
+                        <ui:Button Icon="{ui:SymbolIcon Delete24}" Content="{loc:Loc delete_scenarios}"
+                                   IsEnabled="{Binding SelectedItems.Count, ElementName=ScenarioList}"
+                                   Click="Delete_Scenarios_Click" Margin="0,0,6,0" />
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
+                        <ui:Button Icon="{ui:SymbolIcon Search24}" Content="{loc:Loc scan_all_consists}"
+                                   Click="ScanAllConsistsButton_Click" Margin="0,0,6,0" />
+                        <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="4,2" />
+                        <ui:Button Icon="{ui:SymbolIcon Archive24}" Content="{loc:Loc archive_toggle}"
+                                   IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
+                                   Click="ToggleArchiveRoutes_Click" Margin="0,0,6,0" />
+                        <ui:Button Icon="{ui:SymbolIcon ArchiveMultiple24}" Content="{loc:Loc archive_rest}"
+                                   ToolTip="AutoArchive"
+                                   IsEnabled="{Binding SelectedItems.Count, ElementName=RouteList}"
+                                   Click="ArchiveAllButSelectedRoutes_Click" />
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
 
         <!-- Routes -->
         <DockPanel Grid.Row="2" Margin="12,0,12,0">
