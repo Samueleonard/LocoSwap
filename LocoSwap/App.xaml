@@ -18,16 +18,67 @@
             </Style>
             <Style TargetType="ListViewItem">
                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-                <Setter Property="Padding" Value="4,3" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
-                    </Trigger>
-                    <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
-                    </Trigger>
-                </Style.Triggers>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Padding" Value="6,4" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewItem">
+                            <Border x:Name="Bd" Margin="2,1" CornerRadius="4"
+                                    Background="{TemplateBinding Background}"
+                                    SnapsToDevicePixels="True">
+                                <Border x:Name="AccentBar" BorderThickness="2,0,0,0" BorderBrush="Transparent"
+                                        Padding="{TemplateBinding Padding}">
+                                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                          Columns="{TemplateBinding GridView.ColumnCollection}"
+                                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                                    <Setter TargetName="AccentBar" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
+            <!-- Match the calm selection/hover treatment for plain ListBoxes -->
+            <Style TargetType="ListBoxItem">
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Padding" Value="8,5" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Bd" Margin="2,1" CornerRadius="4"
+                                    Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                <Border x:Name="AccentBar" BorderThickness="2,0,0,0" BorderBrush="Transparent"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                                    <Setter TargetName="AccentBar" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style TargetType="GridViewColumnHeader">
                 <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
