@@ -124,8 +124,11 @@ namespace LocoSwap
         /// </summary>
         public void CheckConsists()
         {
+            // Only a cached "all found" is trusted without re-parsing. A cached "missing" result
+            // is always re-checked: the scenario file is unchanged when the user installs the
+            // content it was waiting on, so the cache key alone cannot tell it is now clean.
             ScenarioVehicleExistance? cached = ScenarioConsistCache.TryGet(RouteId, Id, ApFileName);
-            if (cached != null)
+            if (cached == ScenarioVehicleExistance.AllFound)
             {
                 _scenarioVehiclesExist = cached.Value;
                 return;

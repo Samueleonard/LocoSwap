@@ -43,6 +43,9 @@
                                Content="{loc:Loc scan_all_consists}" Click="ScanButton_Click" Margin="0,0,6,0" />
                     <ui:Button x:Name="CancelButton" Icon="{ui:SymbolIcon Dismiss24}" Content="{loc:Loc cancel}"
                                Click="CancelButton_Click" IsEnabled="False" Margin="0,0,6,0" />
+                    <ui:Button x:Name="RefreshButton" Icon="{ui:SymbolIcon ArrowClockwise24}" Content="{loc:Loc refresh}"
+                               ToolTip="{loc:Loc consist_scan_rechecking}"
+                               Click="RefreshButton_Click" IsEnabled="False" Margin="0,0,6,0" />
                     <ui:Button x:Name="CopyButton" Icon="{ui:SymbolIcon Copy24}" Content="{loc:Loc copy_report}"
                                Click="CopyButton_Click" IsEnabled="False" />
                 </StackPanel>
@@ -71,7 +74,7 @@
                             </GridViewColumn>
                             <GridViewColumn Header="{loc:Loc route}" Width="240" DisplayMemberBinding="{Binding RouteName}" />
                             <GridViewColumn Header="{loc:Loc scenario}" Width="240" DisplayMemberBinding="{Binding ScenarioName}" />
-                            <GridViewColumn Header="{loc:Loc player_train_name}" Width="150" DisplayMemberBinding="{Binding PlayerTrainName}" />
+                            <GridViewColumn Header="{loc:Loc missing_vehicles}" Width="260" DisplayMemberBinding="{Binding MissingVehiclesSummary}" />
                             <GridViewColumn Header="{loc:Loc missing_count_header}" Width="70" DisplayMemberBinding="{Binding MissingCount}" />
                             <GridViewColumn Header="{loc:Loc in_ap_short}" Width="44">
                                 <GridViewColumn.CellTemplate>

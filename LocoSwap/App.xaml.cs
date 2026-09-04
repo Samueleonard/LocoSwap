@@ -15,28 +15,23 @@ namespace LocoSwap
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>Current session's log. Always next to the executable, never CWD-dependent.</summary>
+        internal static readonly string LogFilePath =
+            Path.Combine(AppContext.BaseDirectory, "debug.log");
+
+        private static readonly string PreviousLogFilePath =
+            Path.Combine(AppContext.BaseDirectory, "debug.previous.log");
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            try
-            {
-                // Keep the previous session's log so a crash can still be diagnosed after a restart
-                if (File.Exists("debug.log"))
-                {
-                    File.Copy("debug.log", "debug.previous.log", overwrite: true);
-                    File.Delete("debug.log");
-                }
-            }
-            catch (Exception)
-            {
-                Debug.Print("Can not rotate existing log file");
-            }
+            RotateLog();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Debug()
-                .WriteTo.File("debug.log",
+                .WriteTo.File(LogFilePath,
                     rollingInterval: RollingInterval.Infinite,
                     rollOnFileSizeLimit: true,
                     fileSizeLimitBytes: 20 * 1024 * 1024)
@@ -105,6 +100,45 @@ namespace LocoSwap
 
         private static bool _fatalReported;
 
+        /// <summary>
+        /// Move the last session's log to debug.previous.log so this session starts clean.
+        /// Serilog always appends, so if the old file is still here (a lingering lock from a
+        /// crashed instance, OneDrive, an editor holding it open) every session piles into one
+        /// file - hence the retry loop and the truncate fallback.
+        /// </summary>
+        private static void RotateLog()
+        {
+            try
+            {
+                if (!File.Exists(LogFilePath)) return;
+
+                for (int attempt = 0; attempt < 10; attempt++)
+                {
+                    try
+                    {
+                        if (File.Exists(PreviousLogFilePath)) File.Delete(PreviousLogFilePath);
+                        File.Move(LogFilePath, PreviousLogFilePath);
+                        return;
+                    }
+                    catch (IOException)
+                    {
+                        System.Threading.Thread.Sleep(50);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        System.Threading.Thread.Sleep(50);
+                    }
+                }
+
+                // Could not rename it - at least start this session from an empty file.
+                File.WriteAllText(LogFilePath, string.Empty);
+            }
+            catch (Exception)
+            {
+                Debug.Print("Can not rotate existing log file");
+            }
+        }
+
         private void ReportFatalException(Exception exception, string source)
         {
             if (_fatalReported) return; // avoid a second dialog while we are already tearing down
@@ -115,7 +149,7 @@ namespace LocoSwap
 
             try
             {
-                string logPath = Path.GetFullPath("debug.log");
+                string logPath = LogFilePath;
                 string details = exception == null
                     ? "Unknown error."
                     : exception.GetType().Name + ": " + exception.Message;

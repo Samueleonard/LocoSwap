@@ -54,12 +54,16 @@ namespace LocoSwap
         {
             if (IsScanning) return;
 
+            // Pick up any content installed/removed since LocoSwap started.
+            VehicleAvailibility.InvalidateLookups();
+
             Results.Clear();
             _hasScanned = true;
             IsScanning = true;
             ScanButton.IsEnabled = false;
             CancelButton.IsEnabled = true;
             CopyButton.IsEnabled = false;
+            RefreshButton.IsEnabled = false;
             ScanProgress.Value = 0;
             StatusText.Text = L("consist_scan_running");
 
@@ -73,9 +77,9 @@ namespace LocoSwap
 
             try
             {
-                var results = await ConsistScanner.ScanAsync(progress, _cts.Token);
-                foreach (BrokenScenario r in results) Results.Add(r);
-                StatusText.Text = string.Format(L("consist_scan_summary"), Results.Count, results.Count);
+                var scan = await ConsistScanner.ScanAsync(progress, _cts.Token);
+                foreach (BrokenScenario r in scan.Broken) Results.Add(r);
+                StatusText.Text = string.Format(L("consist_scan_summary"), Results.Count, scan.Scanned);
             }
             catch (OperationCanceledException)
             {
@@ -94,6 +98,88 @@ namespace LocoSwap
                 ScanButton.IsEnabled = true;
                 CancelButton.IsEnabled = false;
                 CopyButton.IsEnabled = Results.Count > 0;
+                RefreshButton.IsEnabled = Results.Count > 0;
+                Raise(nameof(ShowEmptyState));
+            }
+        }
+
+        /// <summary>Re-check only the scenarios currently listed and drop the ones now fixed.</summary>
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsScanning || Results.Count == 0) return;
+
+            // Re-detect content the user has installed while chasing these fixes.
+            VehicleAvailibility.InvalidateLookups();
+
+            var snapshot = Results.ToList();
+            _hasScanned = true;
+            IsScanning = true;
+            ScanButton.IsEnabled = false;
+            RefreshButton.IsEnabled = false;
+            CopyButton.IsEnabled = false;
+            CancelButton.IsEnabled = true;
+            ScanProgress.Value = 0;
+            StatusText.Text = L("consist_scan_rechecking");
+
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
+            int done = 0;
+
+            try
+            {
+                var updated = await Task.Run(() =>
+                {
+                    var kept = new System.Collections.Concurrent.ConcurrentBag<BrokenScenario>();
+                    int degree = Math.Clamp(Environment.ProcessorCount - 1, 1, 8);
+                    Parallel.ForEach(
+                        snapshot,
+                        new ParallelOptions { MaxDegreeOfParallelism = degree, CancellationToken = token },
+                        item =>
+                        {
+                            try
+                            {
+                                BrokenScenario? still = ConsistScanner.Recheck(item);
+                                if (still != null) kept.Add(still);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Debug("Re-check failed for scenario {0}: {1}", item.ScenarioId, ex.Message);
+                                kept.Add(item);
+                            }
+                            finally
+                            {
+                                int d = Interlocked.Increment(ref done);
+                                Dispatcher.BeginInvoke(new Action(() =>
+                                    ScanProgress.Value = (double)d / snapshot.Count));
+                            }
+                        });
+                    return ConsistScanner.Sort(kept);
+                }, token);
+
+                ScenarioConsistCache.Flush();
+
+                Results.Clear();
+                foreach (BrokenScenario r in updated) Results.Add(r);
+                StatusText.Text = string.Format(L("consist_scan_summary"), Results.Count, snapshot.Count);
+            }
+            catch (OperationCanceledException)
+            {
+                StatusText.Text = L("consist_scan_cancelled");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Consist re-check failed");
+                StatusText.Text = ex.Message;
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
+                IsScanning = false;
+                ScanButton.IsEnabled = true;
+                CancelButton.IsEnabled = false;
+                CopyButton.IsEnabled = Results.Count > 0;
+                RefreshButton.IsEnabled = Results.Count > 0;
                 Raise(nameof(ShowEmptyState));
             }
         }

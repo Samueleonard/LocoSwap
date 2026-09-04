@@ -384,15 +384,52 @@ namespace LocoSwap
             new ScenarioEditWindow(routeId, scenario).Show();
         }
 
-        private void OpenScenarioDirButton_Click(object sender, RoutedEventArgs e)
+        private void OpenScenarioDir_Click(object sender, RoutedEventArgs e)
         {
-            foreach (Scenario scenario in ScenarioList.SelectedItems)
+            if ((sender as MenuItem)?.DataContext is not Scenario scenario) return;
+
+            // Loose scenarios live in their own folder; .ap-packed ones have no extracted
+            // directory, so fall back to the folder holding the .ap archive.
+            string path = scenario.ApFileName != ""
+                ? Path.GetDirectoryName(scenario.ApFileName)
+                : scenario.ScenarioDirectory;
+            OpenInExplorer(path);
+        }
+
+        private void OpenRouteFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as MenuItem)?.DataContext is Route route)
+                OpenInExplorer(route.RouteDirectory);
+        }
+
+        private void OpenRouteScenariosFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as MenuItem)?.DataContext is Route route)
+                OpenInExplorer(Path.Combine(route.RouteDirectory, "Scenarios"));
+        }
+
+        private static void OpenInExplorer(string path)
+        {
+            if (!Directory.Exists(path))
             {
-                if (scenario.ApFileName == "")
-                {
-                    Process.Start(new ProcessStartInfo(scenario.ScenarioDirectory) { UseShellExecute = true });
-                }
+                MessageBox.Show(LocoSwap.Language.Resources.folder_not_found, LocoSwap.Language.Resources.msg_error,
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+        }
+
+        /// <summary>
+        /// Re-enumerate routes and scenarios from disk so newly added or removed
+        /// content shows up without restarting LocoSwap.
+        /// </summary>
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            _consistCheckCts?.Cancel();
+
+            // LoadRoutesAsync rebuilds the Routes collection and reselects the previously
+            // active route by id; that selection change re-reads its scenario list.
+            await LoadRoutesAsync();
         }
 
         private void ScanAllConsistsButton_Click(object sender, RoutedEventArgs e)

@@ -43,8 +43,8 @@ namespace LocoSwap
             var availibility = IsVehicleAvailable(vehicle);
             if (!availibility.Available)
             {
-                _vehicleImageTable[xmlPath] = "/LocoSwap;component/Resources/PreviewNotAvailable.png";
-                return _vehicleImageTable[xmlPath];
+                // Not cached - mirrors IsVehicleAvailable, so a later install shows the real image.
+                return "/LocoSwap;component/Resources/PreviewNotAvailable.png";
             }
 
             if (!availibility.InApFile)
@@ -225,17 +225,28 @@ namespace LocoSwap
                 }
             }
 
-            _vehicleTable[vehicle.XmlPath] = ret;
+            // Deliberately not cached: a "missing" result must be re-checked next time so that
+            // content the user installs mid-session is picked up without restarting LocoSwap.
             return ret;
         }
 
-        public static void ClearTable()
+        /// <summary>
+        /// Forget cached availability look-ups (vehicle table, images, display names, numbering
+        /// lists, .ap index) so freshly installed or removed content is re-detected. Does not
+        /// touch <see cref="ScenarioConsistCache"/>.
+        /// </summary>
+        public static void InvalidateLookups()
         {
             _vehicleTable.Clear();
             _vehicleImageTable.Clear();
             _vehicleDisplayNameTable.Clear();
             _numberingListCache.Clear();
             ApArchiveIndex.Clear();
+        }
+
+        public static void ClearTable()
+        {
+            InvalidateLookups();
             ScenarioConsistCache.Clear();
         }
     }

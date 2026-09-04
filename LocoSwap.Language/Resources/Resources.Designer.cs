@@ -725,7 +725,43 @@ namespace LocoSwap.Language {
                 return ResourceManager.GetString("open_scenario_directory", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Open in File Explorer.
+        /// </summary>
+        public static string open_in_file_explorer {
+            get {
+                return ResourceManager.GetString("open_in_file_explorer", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Route folder.
+        /// </summary>
+        public static string route_folder {
+            get {
+                return ResourceManager.GetString("route_folder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Scenarios folder.
+        /// </summary>
+        public static string scenarios_folder {
+            get {
+                return ResourceManager.GetString("scenarios_folder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to That folder does not exist.
+        /// </summary>
+        public static string folder_not_found {
+            get {
+                return ResourceManager.GetString("folder_not_found", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Path.
         /// </summary>

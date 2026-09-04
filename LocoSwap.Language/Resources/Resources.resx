@@ -159,6 +159,12 @@
   <data name="copy_report" xml:space="preserve">
     <value>Copy report</value>
   </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="consist_scan_rechecking" xml:space="preserve">
+    <value>Re-checking listed scenarios…</value>
+  </data>
   <data name="open_file_location" xml:space="preserve">
     <value>Open file location</value>
   </data>
@@ -257,6 +263,9 @@
   </data>
   <data name="flipped" xml:space="preserve">
     <value>Flipped?</value>
+  </data>
+  <data name="folder_not_found" xml:space="preserve">
+    <value>That folder does not exist.</value>
   </data>
   <data name="game_save_date" xml:space="preserve">
     <value>Save date</value>
@@ -359,6 +368,15 @@
   </data>
   <data name="open_scenario_directory" xml:space="preserve">
     <value>Open scenario directory</value>
+  </data>
+  <data name="open_in_file_explorer" xml:space="preserve">
+    <value>Open in File Explorer</value>
+  </data>
+  <data name="route_folder" xml:space="preserve">
+    <value>Route folder</value>
+  </data>
+  <data name="scenarios_folder" xml:space="preserve">
+    <value>Scenarios folder</value>
   </data>
   <data name="path" xml:space="preserve">
     <value>Path</value>

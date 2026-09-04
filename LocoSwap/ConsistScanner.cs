@@ -37,6 +37,14 @@ namespace LocoSwap
         public bool InAp => Scenario.ApFileName != "";
         public int MissingCount => MissingVehicles.Count;
 
+        /// <summary>Distinct names of the vehicles that are not installed, for the results list.</summary>
+        public string MissingVehiclesSummary => string.Join(", ", MissingVehicles
+            .Select(v => string.IsNullOrEmpty(v.VehicleName)
+                ? Path.GetFileNameWithoutExtension(v.BlueprintPath)
+                : v.VehicleName)
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Distinct());
+
         public string DetailText => string.Join(Environment.NewLine, MissingVehicles.Select(v =>
             string.Format("[{0}{1}]  {2}{3}  ->  \\Assets\\{4}{5}",
                 v.ConsistName,
@@ -57,7 +65,10 @@ namespace LocoSwap
     {
         public readonly record struct Progress(int Done, int Total, string CurrentRoute);
 
-        public static async Task<List<BrokenScenario>> ScanAsync(
+        /// <summary>Broken scenarios found, plus how many scenarios were actually walked.</summary>
+        public readonly record struct ScanResult(List<BrokenScenario> Broken, int Scanned);
+
+        public static async Task<ScanResult> ScanAsync(
             IProgress<Progress>? progress, CancellationToken token)
         {
             Route[] routes = await Task.Run(Route.ListAllRoutes, token);
@@ -113,12 +124,36 @@ namespace LocoSwap
                 ScenarioConsistCache.Flush();
             }
 
-            return results
-                .OrderByDescending(r => r.Status == ScenarioVehicleExistance.Missing)
-                .ThenBy(r => r.RouteName, StringComparer.CurrentCultureIgnoreCase)
-                .ThenBy(r => r.ScenarioName, StringComparer.CurrentCultureIgnoreCase)
-                .ToList();
+            return new ScanResult(Sort(results), total);
         }
+
+        /// <summary>
+        /// Re-run the full consist check for one already-listed scenario (used by the window's
+        /// "Refresh" button after the user has been fixing consists). Returns an updated
+        /// <see cref="BrokenScenario"/>, or <c>null</c> if it is now clean. Always re-parses -
+        /// it does not honour a cached clean result.
+        /// </summary>
+        public static BrokenScenario? Recheck(BrokenScenario existing)
+        {
+            List<MissingConsistVehicle> missing = existing.Scenario.FindMissingVehicles();
+            if (missing.Count == 0) return null;
+
+            return new BrokenScenario
+            {
+                Scenario = existing.Scenario,
+                RouteName = existing.RouteName,
+                RouteId = existing.RouteId,
+                Status = existing.Scenario.ScenarioVehiclesExist,
+                Location = existing.Location,
+                MissingVehicles = missing,
+            };
+        }
+
+        public static List<BrokenScenario> Sort(IEnumerable<BrokenScenario> items) => items
+            .OrderByDescending(r => r.Status == ScenarioVehicleExistance.Missing)
+            .ThenBy(r => r.RouteName, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(r => r.ScenarioName, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
 
         private static BrokenScenario? Inspect(Route route, Scenario scenario)
         {
