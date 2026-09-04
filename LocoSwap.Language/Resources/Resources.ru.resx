@@ -429,4 +429,79 @@
   <data name="vehicle_to_be_replaced" xml:space="preserve">
     <value>Заменяемый подвижной состав</value>
   </data>
+  <data name="consist_loose" xml:space="preserve">
+    <value>Свободный состав</value>
+  </data>
+  <data name="consist_scan_cancelled" xml:space="preserve">
+    <value>Проверка отменена.</value>
+  </data>
+  <data name="consist_scan_desc" xml:space="preserve">
+    <value>Проверить все сценарии во всех установленных маршрутах на наличие составов, использующих неустановленный подвижной состав.</value>
+  </data>
+  <data name="consist_scan_idle" xml:space="preserve">
+    <value>Готово к проверке всех маршрутов и сценариев.</value>
+  </data>
+  <data name="consist_scan_none" xml:space="preserve">
+    <value>Составы с ошибками не найдены.</value>
+  </data>
+  <data name="consist_scan_rechecking" xml:space="preserve">
+    <value>Повторная проверка выбранных сценариев…</value>
+  </data>
+  <data name="consist_scan_running" xml:space="preserve">
+    <value>Проверка…</value>
+  </data>
+  <data name="consist_scan_summary" xml:space="preserve">
+    <value>Сценариев с отсутствующим подвижным составом: {0} из {1} проверенных.</value>
+  </data>
+  <data name="consist_scan_title" xml:space="preserve">
+    <value>Проверка составов с ошибками</value>
+  </data>
+  <data name="copy_report" xml:space="preserve">
+    <value>Копировать отчёт</value>
+  </data>
+  <data name="folder_not_found" xml:space="preserve">
+    <value>Эта папка не существует.</value>
+  </data>
+  <data name="in_ap_short" xml:space="preserve">
+    <value>.ap</value>
+  </data>
+  <data name="missing_count_header" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="missing_vehicles" xml:space="preserve">
+    <value>Отсутствующий подвижной состав</value>
+  </data>
+  <data name="msg_scenario_save_failed" xml:space="preserve">
+    <value>Не удалось сохранить сценарий. Исходные файлы остались без изменений (резервная копия с меткой времени находится в папке сценария).</value>
+  </data>
+  <data name="msg_vehicles_replaced" xml:space="preserve">
+    <value>Заменено подходящих единиц: {0} — на {1}.</value>
+  </data>
+  <data name="msg_vehicles_replaced_by_rules" xml:space="preserve">
+    <value>Правила замены заменили единиц: {0}.</value>
+  </data>
+  <data name="open_file_location" xml:space="preserve">
+    <value>Открыть расположение файла</value>
+  </data>
+  <data name="open_in_file_explorer" xml:space="preserve">
+    <value>Открыть в Проводнике</value>
+  </data>
+  <data name="player_train_free_roam" xml:space="preserve">
+    <value>Свободное вождение</value>
+  </data>
+  <data name="player_train_quick_drive" xml:space="preserve">
+    <value>Быстрая поездка</value>
+  </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="route_folder" xml:space="preserve">
+    <value>Папка маршрута</value>
+  </data>
+  <data name="scan_all_consists" xml:space="preserve">
+    <value>Проверить все составы</value>
+  </data>
+  <data name="scenarios_folder" xml:space="preserve">
+    <value>Папка сценариев</value>
+  </data>
 </root>

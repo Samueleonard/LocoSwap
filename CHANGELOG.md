@@ -1,4 +1,4 @@
-# CHANGELOG 1.7.0.0 (03-09-2026)
+# CHANGELOG 1.7.0.0 (04-09-2026)
 * Ported to .NET 10 (from .NET Framework 4.8)
 * Settings now stored as `%AppData%\LocoSwap\settings.json`; existing settings are imported automatically on first run
 * Removed the abandoned DotNetZip and WindowsAPICodePack dependencies
@@ -11,6 +11,11 @@
 * Completed the German translation (was ~30 strings behind) and filled small gaps in French and Italian
 * Added Spanish and Polish translations
 * Changing the UI language now takes effect immediately - the main window and every open window retranslate on the spot instead of only applying to windows opened afterwards
+* The "Look up vehicles" scan is now cached on disk (`%AppData%\LocoSwap\vehicle-cache.json`) and re-used until the underlying `.bin`/`.ap` file changes
+* Route and scenario lists have a right-click "Open in File Explorer" menu (route folder / scenarios folder; works for scenarios inside `.ap` files too); the old toolbar "open scenario directory" button was removed
+* Scenario save failures now report the actual error instead of always saying "write access denied"
+* Button added to bulk scan every scenario across every route at once to find any missing consists across the whole install
+* `debug.log` is rotated on every launch instead of growing without bound
 
 # CHANGELOG 1.6.1.0 (05-01-2024)
 * When selecting a missing vehicle, automatically focus the closest matching asset folder

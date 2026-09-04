@@ -1,8 +1,8 @@
 using System;
 using System.Windows;
+using LocoSwap.Properties;
 using Serilog;
 using Wpf.Ui.Appearance;
-using LocoSwap.Properties;
 
 namespace LocoSwap
 {

@@ -429,4 +429,79 @@
   <data name="completion_notindb" xml:space="preserve">
     <value />
   </data>
+  <data name="consist_loose" xml:space="preserve">
+    <value>Loser Zugverband</value>
+  </data>
+  <data name="consist_scan_cancelled" xml:space="preserve">
+    <value>Prüfung abgebrochen.</value>
+  </data>
+  <data name="consist_scan_desc" xml:space="preserve">
+    <value>Jedes Szenario in jeder installierten Strecke auf Zugverbände prüfen, die nicht installierte Fahrzeuge verwenden.</value>
+  </data>
+  <data name="consist_scan_idle" xml:space="preserve">
+    <value>Bereit, alle Strecken und Szenarien zu prüfen.</value>
+  </data>
+  <data name="consist_scan_none" xml:space="preserve">
+    <value>Keine fehlerhaften Zugverbände gefunden.</value>
+  </data>
+  <data name="consist_scan_rechecking" xml:space="preserve">
+    <value>Aufgeführte Szenarien werden erneut geprüft…</value>
+  </data>
+  <data name="consist_scan_running" xml:space="preserve">
+    <value>Prüfung läuft…</value>
+  </data>
+  <data name="consist_scan_summary" xml:space="preserve">
+    <value>{0} Szenario(s) mit fehlenden Fahrzeugen von {1} geprüften.</value>
+  </data>
+  <data name="consist_scan_title" xml:space="preserve">
+    <value>Prüfung fehlerhafter Zugverbände</value>
+  </data>
+  <data name="copy_report" xml:space="preserve">
+    <value>Bericht kopieren</value>
+  </data>
+  <data name="folder_not_found" xml:space="preserve">
+    <value>Dieser Ordner existiert nicht.</value>
+  </data>
+  <data name="in_ap_short" xml:space="preserve">
+    <value>.ap</value>
+  </data>
+  <data name="missing_count_header" xml:space="preserve">
+    <value>Fehlt</value>
+  </data>
+  <data name="missing_vehicles" xml:space="preserve">
+    <value>Fehlende Fahrzeuge</value>
+  </data>
+  <data name="msg_scenario_save_failed" xml:space="preserve">
+    <value>Das Szenario konnte nicht gespeichert werden. Die Originaldateien wurden nicht verändert (eine mit Zeitstempel versehene Sicherung befindet sich im Szenario-Ordner).</value>
+  </data>
+  <data name="msg_vehicles_replaced" xml:space="preserve">
+    <value>{0} passende(s) Fahrzeug(e) wurden durch {1} ersetzt.</value>
+  </data>
+  <data name="msg_vehicles_replaced_by_rules" xml:space="preserve">
+    <value>{0} Fahrzeug(e) wurden durch die Ersetzungsregeln ersetzt.</value>
+  </data>
+  <data name="open_file_location" xml:space="preserve">
+    <value>Dateipfad öffnen</value>
+  </data>
+  <data name="open_in_file_explorer" xml:space="preserve">
+    <value>Im Datei-Explorer öffnen</value>
+  </data>
+  <data name="player_train_free_roam" xml:space="preserve">
+    <value>Freies Fahren</value>
+  </data>
+  <data name="player_train_quick_drive" xml:space="preserve">
+    <value>Schnellfahrt</value>
+  </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="route_folder" xml:space="preserve">
+    <value>Streckenordner</value>
+  </data>
+  <data name="scan_all_consists" xml:space="preserve">
+    <value>Alle Zugverbände prüfen</value>
+  </data>
+  <data name="scenarios_folder" xml:space="preserve">
+    <value>Szenarienordner</value>
+  </data>
 </root>

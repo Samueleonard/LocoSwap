@@ -429,4 +429,79 @@
   <data name="scenario_in_ap" xml:space="preserve">
     <value>*** Questo scenario è contenuto in un file .ap. LocoSwap lo estrarrà automaticamente al salvataggio. ***</value>
   </data>
+  <data name="consist_loose" xml:space="preserve">
+    <value>Convoglio sciolto</value>
+  </data>
+  <data name="consist_scan_cancelled" xml:space="preserve">
+    <value>Analisi annullata.</value>
+  </data>
+  <data name="consist_scan_desc" xml:space="preserve">
+    <value>Controlla ogni scenario di ogni tracciato installato per individuare i convogli che utilizzano veicoli non installati.</value>
+  </data>
+  <data name="consist_scan_idle" xml:space="preserve">
+    <value>Pronto ad analizzare tutti i tracciati e gli scenari.</value>
+  </data>
+  <data name="consist_scan_none" xml:space="preserve">
+    <value>Nessun convoglio incompleto trovato.</value>
+  </data>
+  <data name="consist_scan_rechecking" xml:space="preserve">
+    <value>Nuovo controllo degli scenari elencati…</value>
+  </data>
+  <data name="consist_scan_running" xml:space="preserve">
+    <value>Analisi in corso…</value>
+  </data>
+  <data name="consist_scan_summary" xml:space="preserve">
+    <value>{0} scenario/i con veicoli mancanti, su {1} analizzati.</value>
+  </data>
+  <data name="consist_scan_title" xml:space="preserve">
+    <value>Analisi dei convogli incompleti</value>
+  </data>
+  <data name="copy_report" xml:space="preserve">
+    <value>Copia rapporto</value>
+  </data>
+  <data name="folder_not_found" xml:space="preserve">
+    <value>Questa cartella non esiste.</value>
+  </data>
+  <data name="in_ap_short" xml:space="preserve">
+    <value>.ap</value>
+  </data>
+  <data name="missing_count_header" xml:space="preserve">
+    <value>Mancante</value>
+  </data>
+  <data name="missing_vehicles" xml:space="preserve">
+    <value>Veicoli mancanti</value>
+  </data>
+  <data name="msg_scenario_save_failed" xml:space="preserve">
+    <value>Impossibile salvare lo scenario. I file originali non sono stati modificati (nella cartella dello scenario è presente un backup con data e ora).</value>
+  </data>
+  <data name="msg_vehicles_replaced" xml:space="preserve">
+    <value>{0} veicolo/i corrispondente/i sostituito/i con {1}.</value>
+  </data>
+  <data name="msg_vehicles_replaced_by_rules" xml:space="preserve">
+    <value>{0} veicolo/i sostituito/i dalle regole di sostituzione.</value>
+  </data>
+  <data name="open_file_location" xml:space="preserve">
+    <value>Apri percorso del file</value>
+  </data>
+  <data name="open_in_file_explorer" xml:space="preserve">
+    <value>Apri in Esplora file</value>
+  </data>
+  <data name="player_train_free_roam" xml:space="preserve">
+    <value>Marcia libera</value>
+  </data>
+  <data name="player_train_quick_drive" xml:space="preserve">
+    <value>Guida rapida</value>
+  </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="route_folder" xml:space="preserve">
+    <value>Cartella del tracciato</value>
+  </data>
+  <data name="scan_all_consists" xml:space="preserve">
+    <value>Analizza tutti i convogli</value>
+  </data>
+  <data name="scenarios_folder" xml:space="preserve">
+    <value>Cartella degli scenari</value>
+  </data>
 </root>

@@ -429,4 +429,79 @@
   <data name="msg_swap_completed" xml:space="preserve">
     <value>Échange terminé avec succès.</value>
   </data>
+  <data name="consist_loose" xml:space="preserve">
+    <value>Rame libre</value>
+  </data>
+  <data name="consist_scan_cancelled" xml:space="preserve">
+    <value>Analyse annulée.</value>
+  </data>
+  <data name="consist_scan_desc" xml:space="preserve">
+    <value>Vérifier, dans tous les itinéraires installés, chaque scénario dont les rames utilisent des véhicules non installés.</value>
+  </data>
+  <data name="consist_scan_idle" xml:space="preserve">
+    <value>Prêt à analyser tous les itinéraires et scénarios.</value>
+  </data>
+  <data name="consist_scan_none" xml:space="preserve">
+    <value>Aucune rame incomplète trouvée.</value>
+  </data>
+  <data name="consist_scan_rechecking" xml:space="preserve">
+    <value>Nouvelle vérification des scénarios listés…</value>
+  </data>
+  <data name="consist_scan_running" xml:space="preserve">
+    <value>Analyse en cours…</value>
+  </data>
+  <data name="consist_scan_summary" xml:space="preserve">
+    <value>{0} scénario(s) avec des véhicules manquants, sur {1} analysé(s).</value>
+  </data>
+  <data name="consist_scan_title" xml:space="preserve">
+    <value>Analyse des rames incomplètes</value>
+  </data>
+  <data name="copy_report" xml:space="preserve">
+    <value>Copier le rapport</value>
+  </data>
+  <data name="folder_not_found" xml:space="preserve">
+    <value>Ce dossier n'existe pas.</value>
+  </data>
+  <data name="in_ap_short" xml:space="preserve">
+    <value>.ap</value>
+  </data>
+  <data name="missing_count_header" xml:space="preserve">
+    <value>Manquant</value>
+  </data>
+  <data name="missing_vehicles" xml:space="preserve">
+    <value>Véhicules manquants</value>
+  </data>
+  <data name="msg_scenario_save_failed" xml:space="preserve">
+    <value>Le scénario n'a pas pu être enregistré. Les fichiers d'origine n'ont pas été modifiés (une sauvegarde horodatée se trouve dans le dossier du scénario).</value>
+  </data>
+  <data name="msg_vehicles_replaced" xml:space="preserve">
+    <value>{0} véhicule(s) correspondant(s) ont été remplacés par {1}.</value>
+  </data>
+  <data name="msg_vehicles_replaced_by_rules" xml:space="preserve">
+    <value>{0} véhicule(s) ont été remplacés par les règles de remplacement.</value>
+  </data>
+  <data name="open_file_location" xml:space="preserve">
+    <value>Ouvrir l'emplacement du fichier</value>
+  </data>
+  <data name="open_in_file_explorer" xml:space="preserve">
+    <value>Ouvrir dans l'Explorateur de fichiers</value>
+  </data>
+  <data name="player_train_free_roam" xml:space="preserve">
+    <value>Exploration libre</value>
+  </data>
+  <data name="player_train_quick_drive" xml:space="preserve">
+    <value>Conduite rapide</value>
+  </data>
+  <data name="refresh" xml:space="preserve">
+    <value>Actualiser</value>
+  </data>
+  <data name="route_folder" xml:space="preserve">
+    <value>Dossier de l'itinéraire</value>
+  </data>
+  <data name="scan_all_consists" xml:space="preserve">
+    <value>Analyser toutes les rames</value>
+  </data>
+  <data name="scenarios_folder" xml:space="preserve">
+    <value>Dossier des scénarios</value>
+  </data>
 </root>
